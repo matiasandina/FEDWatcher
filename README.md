@@ -16,6 +16,17 @@ Go into advanced options, select GL driver, install necessary packages if asked,
 
 This will take a long time. When the install is finished, the Raspberry Pi will reboot and you will be able to log into the Gnome desktop. In addition, the wifi will be disconnected, but you will be able to reconnect after logging in. After choosing your user and before entering your password, click the settings cog wheel under the password entry box and choose "Gnome for Xorg".
 
+Next, you must enable the four hardware UARTs within the Raspberry Pi. Navigate to /boot/ and edit config.txt. At the end of the file, add on the following statements
+
+>force_eeprom_read=0\
+>disable_poe_fan=1\
+>dtoverlay=uart2\
+>dtoverlay=uart3\
+>dtoverlay=uart4\
+>dtoverlay=uart5
+
+The first two line disables the GPIO 0 and 1 functionality to be used for uart2. If you would like to use a hat or a POE fan with the Pi at the same time, remove the first three lines.
+
 Now, you will be able to clone the Fedwatch github repository into your project and use the functions within it to run your own programs.
 
 ## Pinout
