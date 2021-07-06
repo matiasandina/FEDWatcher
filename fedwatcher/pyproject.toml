@@ -2,8 +2,7 @@
 requires = [
     "setuptools>=42",
     "wheel",
-    "multiprocessing",
-    "serial",
+    "pyserial",
     "time",
 ]
 build-backend = "setuptools.build_meta"
