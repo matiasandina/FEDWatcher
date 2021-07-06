@@ -1,16 +1,17 @@
 from src import fedwatcher as fwr
 import time
 
+multiOn = False
+
 def printTime(line):
     print(time.ctime())
 
 if __name__ == "__main__":
+    fw = fwr.Fedwatcher()
     try:
         print("Starting fedwatch")
-        fw = fwr.Fedwatcher()
-        fw.run(f=printTime, verbose=True)
+        fw.run(f=printTime, multi=multiOn, verbose=True)
         print("started")
-        print(f"Running: {fw.is_running()}, Ready: {fw.is_ready()}")
         while True:
             pass
     except KeyboardInterrupt:
@@ -18,4 +19,3 @@ if __name__ == "__main__":
         fw.stop()
         fw.close()
         print("finished")
-        print(f"Running: {fw.is_running()}, Ready: {fw.is_ready()}")
