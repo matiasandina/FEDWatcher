@@ -55,4 +55,4 @@ For this setup, the red/hot wire will go to one of the receiver post listed abov
 
 For more information on the pinout of the Raspberry pi visit the [Official Raspberry Documentation](https://www.raspberrypi.org/documentation/usage/gpio/). See below the official pinout for the Raspberry from the docs.
 
-![](https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO-Pinout-Diagram-2.png)
+![image](https://user-images.githubusercontent.com/7494967/124830013-53691600-df47-11eb-8e53-1c78fbac09ee.png)
