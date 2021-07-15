@@ -1,6 +1,8 @@
 import serial
 import time
 import multiprocessing as mp
+import pandas as pd
+import os
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -23,6 +25,11 @@ class Fedwatcher:
     manager = None
     portLocks = None
 
+    # Dataframe variables
+    columns = ["Pi_Time", "MM:DD:YYYY hh:mm:ss", "Library_Version", "Session_type", "Device_Number", "Battery_Voltage", "Motor_Turns", "FR", "Event", "Active_Poke", "Left_Poke_Count", "Right_Poke_Count", "Pellet_Count", "Block_Pellet_Count", "Retrieval_Time", "InterPellet_Retrieval_Time", "Poke_Time"]
+    df = None
+    max_size = 100
+
     def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), multi=False):
         """
         Constructor
@@ -37,6 +44,7 @@ class Fedwatcher:
         self.portpaths = portpaths
         self.manager = mp.Manager()
         self.portLocks = self.manager.list()
+        self.df = pd.DataFrame(columns=self.columns)
 
         for portpath in self.portpaths:
             port = serial.Serial(
@@ -90,6 +98,9 @@ class Fedwatcher:
             if self.ports:
                 self.ready = True
 
+    def sendAlert(self, fedNumber):
+        print(f"jam detected on fed {fedNumber}")
+
     def readPort(self, port, f=None, verbose=False, lockInd=None):
         """
         Reads from a serial port until a UTF-8 newline character \n
@@ -99,12 +110,18 @@ class Fedwatcher:
             verbose: prints all input if true
         """
         line = port.readline()
-        if verbose:
-            print(line)
-        if f is not None:
-            f(line)
+        now = time.ctime()
         if lockInd is not None:
             self.portLocks[lockInd] = False
+        line = str(line)[2:-5]
+        if line[-3:] == "jam":
+            self.sendAlert(line[:-4])
+        ret = self._format_line_dict(line, now)
+        if f is not None:
+            f(ret)
+        self._frame_update(ret)
+        if verbose:
+            print(line)
 
     def runHelper(self, f=None, multi=False, verbose=False):
         """
@@ -186,6 +203,58 @@ class Fedwatcher:
         """
         return self.running
 
+    ##
+    #  Formatting Functions
+    ##
+
+    def _format_line_list(self, line, now):
+        l = line.split(",")
+        l.insert(0, now)
+        return l
+
+    def _format_line_dict(self, line, now):
+        l = line.split(",")
+        d = {'Pi_Time': now}
+        for item, column in zip(l, self.columns[1:]):
+            d[column] = item
+        return d
+
+    ##
+    #  Data saving functions
+    ##
+
+    def _save_to_frame(self, d):
+        self.df = self.df.append(d, ignore_index=True)
+
+    def _format_frame(self, df):
+        df['Datetime'] = pd.to_datetime(df['Pi_Time'])
+        df = df.set_index('Datetime')
+        df = df.drop(['Pi_Time'], axis=1)
+        return df
+
+    def _save_to_csv(self, path=None):
+        filename = "fedwatcher_" + str(self.df["Pi_Time"].iloc[-1]).replace(' ', '_') + ".csv"
+        if path is None:
+            path = os.path.join(os.path.expanduser('~'), 'Documents', 'Fedwatcher')
+            if not os.path.exists(path):
+                os.makedirs(path)
+            path = os.path.join(path, filename)
+        else:
+            path = os.path.join(path, filename)
+        self.df.to_csv(path_or_buf=path, index=False)
+
+    def _reset_df(self):
+        self.df = pd.DataFrame(columns=self.columns)
+
+    def _frame_update(self, line):
+        self._save_to_frame(line)
+        if self.df.shape[0] >= self.max_size:
+            self._save_to_csv()
+            self._reset_df()
+
+    def get_dataframe(self):
+        return pd.DataFrame(self.df)
+
 if __name__ == "__main__":
     try:
         print("Starting fedwatch")
@@ -201,3 +270,5 @@ if __name__ == "__main__":
         fw.close()
         print("finished")
         print(f"Running: {fw.is_running()}, Ready: {fw.is_ready()}")
+
+
