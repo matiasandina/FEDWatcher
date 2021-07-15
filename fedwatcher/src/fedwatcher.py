@@ -98,6 +98,9 @@ class Fedwatcher:
             if self.ports:
                 self.ready = True
 
+    def sendAlert(self, fedNumber):
+        print(f"jam detected on fed {fedNumber}")
+
     def readPort(self, port, f=None, verbose=False, lockInd=None):
         """
         Reads from a serial port until a UTF-8 newline character \n
@@ -111,6 +114,8 @@ class Fedwatcher:
         if lockInd is not None:
             self.portLocks[lockInd] = False
         line = str(line)[2:-5]
+        if line[-3:] == "jam":
+            self.sendAlert(line[:-4])
         ret = self._format_line_dict(line, now)
         if f is not None:
             f(ret)
@@ -265,4 +270,5 @@ if __name__ == "__main__":
         fw.close()
         print("finished")
         print(f"Running: {fw.is_running()}, Ready: {fw.is_ready()}")
+
 
