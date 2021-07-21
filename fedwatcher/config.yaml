@@ -1,0 +1,8 @@
+[fedwatcher]
+exp_name=experiment1
+save_path=Documents
+
+[email_credentials]
+user=example@example.com
+pass=password
+sendto=example@example.com
