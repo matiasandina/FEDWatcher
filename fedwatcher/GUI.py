@@ -6,6 +6,7 @@ import numpy as np
 import tkinter.ttk as ttk
 import datetime
 from configparser import ConfigParser
+from src.fedwatcher import Fedwatcher
 
 class App():
 	def __init__(self, window, window_title):
@@ -79,7 +80,7 @@ class App():
 		self.menu_right_title = tkinter.Label(self.frame,
 		 text="Experiment Control", bg=self.bg_color, font=("Helvetica", 16))
 		self.menu_right_title.pack()
-
+	
 		# Buttons -----
 		self.create_project = tkinter.Button(self.frame,
 		 text="Create Project",
@@ -99,40 +100,16 @@ class App():
 		 state=tkinter.DISABLED,
 		 pady=20, bg=self.button_color, highlightbackground="black")
 		self.exp_button.pack(pady=5)
+		# stop experiment
+		self.exp_stop_button = tkinter.Button(self.frame,
+		 text="Stop Experiment",
+		 command=self.stop_experiment,
+		 state=tkinter.DISABLED,
+		 pady=20, bg=self.button_color, highlightbackground="black")
+		self.exp_stop_button.pack(pady=5)
+
 		# on closing, ask before closing
 		self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
-		# Define the different GUI widgets
-
-
-		# Set the treeview
-		#self.treeview_columns = ['mac', 'date', 'ID', 'Treatment', 'Dose', 'Comment']
-		#self.tree = ttk.Treeview(self.menu_left_lower,
-		#                         columns=self.treeview_columns,
-		#                         height=3)
-		#self.tree.heading('mac', text='mac', anchor=tkinter.W)
-		#self.tree.heading('date', text="date", anchor=tkinter.W)
-		#self.tree.heading("ID", text="ID", anchor=tkinter.W)
-		#self.tree.heading('Treatment', text='Treatment', anchor=tkinter.W)
-		#self.tree.heading('Dose', text='Dose', anchor=tkinter.W)
-		#self.tree.heading('Comment', text='Comment', anchor=tkinter.W)
-		#self.tree.column('mac', stretch=tkinter.NO, width=120)
-		#self.tree.column('date', stretch=tkinter.NO, width=200)
-		#self.tree.column('ID', stretch=tkinter.NO, width=60)
-		#self.tree.column('Treatment', stretch=tkinter.NO, width=120)
-		#self.tree.column('Dose', stretch=tkinter.NO, width=60)
-		#self.tree.column('Comment', stretch=tkinter.NO, width=100)
-		## only show headings, this removes nasty first empty column
-		#self.tree['show'] = 'headings'
-		## position on grid
-		#self.tree.grid(row=1, columns=1, sticky='nsew')
-		## scroll bar
-		#self.vsb = ttk.Scrollbar(self.menu_left_lower,
-		# orient="vertical", command=self.tree.yview)
-		#self.vsb.grid(row=1,column=4, sticky="EW")
-		#self.tree.configure(yscrollcommand=self.vsb.set)
-
-		#self.treeview = self.tree
-
 
 
 		self.menu_left.grid(row=0, column=0, sticky="nsew")
@@ -143,6 +120,10 @@ class App():
 		# this gives priority to entry boxes
 		# because of this, they will resize and fill space with the menu_left_upper
 		self.menu_left_upper.grid_columnconfigure(1, weight=1)
+
+		# Start FEDWatcher ---
+		self.fw = Fedwatcher()
+
 
 	def get_mac(self):
 		# This is good for Raspberry PIs, not good for other OS !
@@ -194,38 +175,44 @@ class App():
 		self.exp_button.config(state="normal") 
 
 	def start_experiment(self):
-		all_set = self.check_input()
+		#all_set = self.check_input()
+		all_true = True
+		self.exp_button.config(state="normal") 
 		if all_set:
-			self.save_data()
-			#os.system("python3 /home/pi/homecage_quantification/main.py")
-			# call FEDWatcher
+			# self.save_data()
+			self.fw.run()
 		else:
 			tkinter.messagebox.showinfo("Config File Missing",
 			 "Please make sure you have entered at least animal ID.\nDelete entries with empty values and begin again.")
 
 
 	def check_input(self):
-		# this function checks whether we have a correct config file
-		print("checking config file")
-		children = self.treeview.get_children()
-		if len(children) > 0:
-			# make a data frame
-			values = pd.DataFrame(None, 
-					columns=self.treeview_columns)
-			for row in children:
-				values = values.append(pd.DataFrame([self.treeview.item(row)["values"]], 
-					columns=self.treeview_columns))
-			# non completed values will be ""
-			print(values)
-			if any(values["ID"] == ""):
-				return False
-			else:
-				return True
+		# if self.configpath is not None (maybe then look for the file?)
+		if os.path.isfile(self.configpath):
+			config = configparser.ConfigParser()
+			config.read(self.configpath)
+		try:
+			self.exp_name = config['fedwatcher']['exp_name']
+		except KeyError: 
+			print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
+		try:
+			self.save_dir = config['fedwatcher']['save_dir']
+		except KeyError: 
+			print("config file does not specify save directory. Using Documents as save directory.")
+		try:
+			self.session_num = int(config['fedwatcher']['session_num'])
+		except KeyError:
+			print("config file does not specify session number. Using 0 as session number.")
+		except ValueError:
+			print("config file has an invalid entry for session number")
 		else:
-			return False
+			print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+
 
 	def on_closing(self):
 		if tkMessageBox.askyesno("Quit", "Do you want to quit?"):
+			# this first stops fedwatcher, fedwatcher will handle data saving
+			self.fw.close() 
 			self.window.destroy()
 
 	def read_credentials(self):
@@ -233,19 +220,31 @@ class App():
 		return
 
 	def create_config(self):
+		# choose directories first
+		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
+		self.configpath = os.path.join(self.rootdir, self.exp_entry.get(), "config.yaml")
+		# create directory
+		if not os.path.isdir(self.configpath):
+			print("Creating Experiment Directory within Project Directory")
+			os.mkdir(self.configpath)
+
+		# Create config
 		config = ConfigParser()
-		config.read('config.yaml')
-		config.add_section('exp_name')
-		config.set('exp_name', 'exp_name', self.exp_entry.get())
-		# TODO: add more properties to the config 
-		#config.set('exp_name', 'key2', 'value2')
-		#config.set('exp_name', 'key3', 'value3')
+		config.read(self.configpath)
+		config.add_section('fedwatcher')
+		config.set('fedwatcher', 'exp_name', self.exp_entry.get())
+		config.set('fedwatcher', 'save_dir', self.rootdir)
+		config.set('fedwatcher', 'session_num', 'value3')
+
+
+		# TODO: Create session number
+
 		# TODO: add 
 		# if check_input():
 			# write
 		# else:
 			# throw error 
-		with open('config.yaml', 'w') as f:
+		with open(self.configpath, 'w') as f:
 		    config.write(f)
 		return "Config was saved"
 
@@ -254,6 +253,11 @@ class App():
 		config = ConfigParser()
 		config.read('config.yaml')
 		# TODO: should do something here
+		return
+	def stop_experiment(self):
+		# this stops fedwatcher but doesn't close ports
+		self.fw.stop()
+		print("Fedwatcher has been stopped!")
 		return
 
 

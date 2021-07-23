@@ -62,7 +62,7 @@ class Fedwatcher:
         self.last_save = time.time()
         self.data_queue = mp.Queue()
 
-        self.configpath = os.path.join(os.path.expanduser('~'), configpath)
+        self.configpath = configpath
         if os.path.isfile(self.configpath):
             config = configparser.ConfigParser()
             config.read(self.configpath)
@@ -341,7 +341,7 @@ class Fedwatcher:
         filename = "FED" + df_data[0]["Device_Number"]+ "_" +  timestr + f"_{self.session_num:02d}.csv"
 
 
-        path = os.path.join(os.path.expanduser('~'), self.save_dir, self.exp_name, str(today.year), f"{today.month:02d}")
+        path = os.path.join(self.save_dir, self.exp_name, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, filename)
