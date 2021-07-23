@@ -34,12 +34,15 @@ class Fedwatcher:
     columns = ["Pi_Time", "MM:DD:YYYY hh:mm:ss", "Library_Version", "Session_type", "Device_Number", "Battery_Voltage", "Motor_Turns", "FR", "Event", "Active_Poke", "Left_Poke_Count", "Right_Poke_Count", "Pellet_Count", "Block_Pellet_Count", "Retrieval_Time", "InterPellet_Retrieval_Time", "Poke_Time"]
     data_queue = None
     df_dict = {}
+
+    # Saving variables
     save_interval = 300 # seconds between df saves
+    max_size = 100 # max entries before a df is saved and emptied
     last_save = None
-    start_dict = {}
     config_path = None
-    save_path = "Documents"
+    save_dir = "Documents"
     exp_name = "Fedwatcher"
+    session_num = 0
 
     def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath="FEDWatcher/fedwatcher/config.yaml"):
         """
@@ -65,10 +68,20 @@ class Fedwatcher:
             config.read(self.configpath)
             try:
                 self.exp_name = config['fedwatcher']['exp_name']
-            except configparser.NoOptionError: pass
+            except KeyError: 
+                print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
             try:
-                self.save_path = config['fedwatcher']['save_path']
-            except configparser.NoOptionError: pass
+                self.save_dir = config['fedwatcher']['save_dir']
+            except KeyError: 
+                print("config file does not specify save directory. Using Documents as save directory.")
+            try:
+                self.session_num = int(config['fedwatcher']['session_num'])
+            except KeyError:
+                print("config file does not specify session number. Using 0 as session number.")
+            except ValueError:
+                print("config file has an invalid entry for session number")
+        else:
+            print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
 
 
         # Makes it so that on receiving a terminate signal, saves all data
@@ -149,12 +162,13 @@ class Fedwatcher:
         line = str(line)[2:-5]
 
         # Hardcoded jam alert from FED3_Library with software serial enabled, formatted f"{Device_Number},jam"
+        # To change this, you must also change the jam message sent in the FED3_Library
         if line[-3:] == "jam":
             self.sendAlert(line[:-4])
             return
         ret = self._format_line_dict(line, now)
 
-        # # Save to dataframe
+        # Save to dataframe
         if multi:
             self.data_queue.put(ret)
         else:
@@ -203,7 +217,7 @@ class Fedwatcher:
                 self._save_all_df()
                 self.last_save = now
 
-            # time.sleep(0.0009)  # loop without reading a port takes about 0.0001, total time ~1ms per loop
+            time.sleep(0.0009)  # loop without reading a port takes about 0.0001, total time ~1ms per loop
 
     def run(self, f=None, multi=False, verbose=False):
         """
@@ -220,16 +234,24 @@ class Fedwatcher:
             raise RuntimeError("Process is already running")
         self.running = True
 
-        # Reread config file in case of changes, or if stopped and restarted without creating new FEDWatcher object
+        # recheck for changes in config file
         if os.path.isfile(self.configpath):
             config = configparser.ConfigParser()
             config.read(self.configpath)
             try:
                 self.exp_name = config['fedwatcher']['exp_name']
-            except configparser.NoOptionError: pass
+            except KeyError: pass
             try:
-                self.save_path = config['fedwatcher']['save_path']
-            except configparser.NoOptionError: pass
+                self.save_dir = config['fedwatcher']['save_dir']
+            except KeyError: pass
+            try:
+                self.session_num = int(config['fedwatcher']['session_num'])
+            except KeyError: pass
+
+        # Checks to make all ports are running. If one is not running, attempts to open it
+        for port in self.ports:
+            if not port.is_open:
+                port.open()
 
         self.last_save = time.time()
         self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
@@ -314,11 +336,12 @@ class Fedwatcher:
 
     def _save_to_csv(self, df_data):
         df = self._new_df(df_data)
-        startTime = datetime.datetime.strptime(df["Pi_Time"].iloc[0], "%a %b %d %H:%M:%S %Y")
-        timestr = f"{startTime.month:02d}" + f"{startTime.day:02d}" + str(startTime.year%100)
-        filename = "FED" + df["Device_Number"].iloc[0] + "_" +  timestr + ".csv"
+        today = datetime.date.today()
+        timestr = f"{today.month:02d}" + f"{today.day:02d}" + str(today.year%100)
+        filename = "FED" + df_data[0]["Device_Number"]+ "_" +  timestr + f"_{self.session_num:02d}.csv"
 
-        path = os.path.join(os.path.expanduser('~'), self.save_path, self.exp_name, str(startTime.year), f"{startTime.month:02d}")
+
+        path = os.path.join(os.path.expanduser('~'), self.save_dir, self.exp_name, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, filename)
@@ -334,11 +357,17 @@ class Fedwatcher:
         """
         Creates/updates dataframes as dictionaries with column headers pointing to list of data in order of oldest to most recent
         """ 
-        Device_Number = data["Device_Number"]
+        try:
+            Device_Number = data["Device_Number"]
+        except KeyError: # invalid data. Catch so fedwatcher does not halt
+            return
         if Device_Number not in self.df_dict:
             self.df_dict[Device_Number] = [data,]
         else:
             self.df_dict[Device_Number].append(data)
+            if len(self.df_dict[Device_Number]) >= self.max_size:
+                self._save_to_csv(self.df_dict[Device_Number])
+                self.df_dict[Device_Number] = []
 
     def _save_all_df(self, reset=True):
         """
@@ -348,6 +377,12 @@ class Fedwatcher:
             self._save_to_csv(df_data)
         if reset:
             self.df_dict = {}
+
+    def get_device_numbers(self):
+        """
+        Returns a list of the FEDS that currently have data stored in the scripts
+        """
+        return self.df_dict.keys()
 
     def get_dataframes(self):
         """
@@ -360,7 +395,7 @@ class Fedwatcher:
 
     def get_dataframe(self, Device_Number):
         """
-        Returns a dataframe of the Fed with device number Device_Number
+        Returns a dataframe of the Fed with device number Device_Number.
         """
         if Device_Number not in self.df_dict:
             return self._new_df()
