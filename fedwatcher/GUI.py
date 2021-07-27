@@ -1,4 +1,5 @@
 import tkinter
+import tkinter.filedialog
 from tkinter import messagebox as tkMessageBox
 import os
 import pandas as pd
@@ -176,7 +177,7 @@ class App():
 
 	def start_experiment(self):
 		#all_set = self.check_input()
-		all_true = True
+		all_set = True
 		self.exp_button.config(state="normal") 
 		if all_set:
 			# self.save_data()
@@ -222,11 +223,12 @@ class App():
 	def create_config(self):
 		# choose directories first
 		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
-		self.configpath = os.path.join(self.rootdir, self.exp_entry.get(), "config.yaml")
+		self.exppath = os.path.join(self.rootdir, self.exp_entry.get())
+		self.configpath = os.path.join(self.exppath, "config.yaml")
 		# create directory
-		if not os.path.isdir(self.configpath):
+		if not os.path.isdir(self.exppath):
 			print("Creating Experiment Directory within Project Directory")
-			os.mkdir(self.configpath)
+			os.mkdir(self.exppath)
 
 		# Create config
 		config = ConfigParser()
@@ -248,6 +250,9 @@ class App():
 		    config.write(f)
 		return "Config was saved"
 
+	def make_session_n(self):
+            files = os.listdir(self.exppath)
+            configs = [file for file in files if "config" in file]
 	def load_config(self):
 		# this function reads a previous config
 		config = ConfigParser()
