@@ -8,6 +8,8 @@ import tkinter.ttk as ttk
 import datetime
 from configparser import ConfigParser
 from src.fedwatcher import Fedwatcher
+import re
+import datetime
 
 class App():
 	def __init__(self, window, window_title):
@@ -213,7 +215,7 @@ class App():
 	def on_closing(self):
 		if tkMessageBox.askyesno("Quit", "Do you want to quit?"):
 			# this first stops fedwatcher, fedwatcher will handle data saving
-			self.fw.close() 
+			self.fw.close()
 			self.window.destroy()
 
 	def read_credentials(self):
@@ -224,22 +226,25 @@ class App():
 		# choose directories first
 		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
 		self.exppath = os.path.join(self.rootdir, self.exp_entry.get())
-		self.configpath = os.path.join(self.exppath, "config.yaml")
-		# create directory
+		# create directory if needed
 		if not os.path.isdir(self.exppath):
 			print("Creating Experiment Directory within Project Directory")
 			os.mkdir(self.exppath)
+				# Get session number
+		self.session_n = self.make_session_n()
+		# make proper config name
+		self.configpath = os.path.join(self.exppath, "config_" + self.session_n + ".yaml")
+
 
 		# Create config
 		config = ConfigParser()
 		config.read(self.configpath)
 		config.add_section('fedwatcher')
 		config.set('fedwatcher', 'exp_name', self.exp_entry.get())
-		config.set('fedwatcher', 'save_dir', self.rootdir)
-		config.set('fedwatcher', 'session_num', 'value3')
-
-
-		# TODO: Create session number
+		config.set('fedwatcher', 'root_dir', self.rootdir)
+		config.set('fedwatcher', 'exp_dir', self.exppath)
+		config.set('fedwatcher', 'session_num', self.session_n)
+		config.set('fedwatcher', 'exp_start', datetime.datetime.now().replace(microsecond=0).isoformat())
 
 		# TODO: add 
 		# if check_input():
@@ -247,12 +252,31 @@ class App():
 		# else:
 			# throw error 
 		with open(self.configpath, 'w') as f:
-		    config.write(f)
+			config.write(f)
 		return "Config was saved"
 
 	def make_session_n(self):
-            files = os.listdir(self.exppath)
-            configs = [file for file in files if "config" in file]
+		'''
+		This function lists the configs in the directory and returns a proper session number as string
+		This strig gets appended to the end of the config yaml to denote sessions
+		'''
+		files = os.listdir(self.exppath)
+		# get config files in exp folder
+		configs = [file for file in files if "config" in file]
+		# if there's no config (new project)
+		if len(configs) < 1:
+			new_session = "00"
+		else:
+			# looking for two digits here
+			pattern = re.compile(r'\d{2}')
+			# find the stuff
+			number_match = [pattern.findall(x) for x in configs]
+			# transform to integer and do the math
+			session_int = [int(x[0]) for x in number_match if len(x) > 0]
+			session_max = max(session_int)
+			new_session = str(session_max + 1).zfill(2)
+		return new_session
+
 	def load_config(self):
 		# this function reads a previous config
 		config = ConfigParser()
@@ -260,6 +284,7 @@ class App():
 		# TODO: should do something here
 		return
 	def stop_experiment(self):
+		# TODO: add date of stopping the session
 		# this stops fedwatcher but doesn't close ports
 		self.fw.stop()
 		print("Fedwatcher has been stopped!")
