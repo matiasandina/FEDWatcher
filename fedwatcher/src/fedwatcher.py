@@ -40,7 +40,7 @@ class Fedwatcher:
     max_size = 100 # max entries before a df is saved and emptied
     last_save = None
     configpath = "../config.yaml"
-    save_dir = "Documents"
+    expdir = "Documents"
     exp_name = "Fedwatcher"
     session_num = 0
 
@@ -72,7 +72,7 @@ class Fedwatcher:
                 except KeyError: 
                     print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
                 try:
-                    self.save_dir = config['fedwatcher']['save_dir']
+                    self.expdir = config['fedwatcher']['expdir']
                 except KeyError: 
                     print("config file does not specify save directory. Using Documents as save directory.")
                 try:
@@ -245,7 +245,7 @@ class Fedwatcher:
                 except KeyError: 
                     print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
                 try:
-                    self.save_dir = config['fedwatcher']['save_dir']
+                    self.expdir = config['fedwatcher']['expdir']
                 except KeyError: 
                     print("config file does not specify save directory. Using Documents as save directory.")
                 try:
@@ -354,7 +354,7 @@ class Fedwatcher:
         filename = "FED" + df_data[0]["Device_Number"]+ "_" +  timestr + f"_{self.session_num:02d}.csv"
 
 
-        path = os.path.join(self.save_dir, self.exp_name, str(today.year), f"{today.month:02d}")
+        path = os.path.join(self.expdir, self.exp_name, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, filename)
