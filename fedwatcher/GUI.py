@@ -180,7 +180,7 @@ class App():
 	def start_experiment(self):
 		#all_set = self.check_input()
 		all_set = True
-		self.exp_button.config(state="normal") 
+		self.exp_stop_button.config(state="normal") 
 		if all_set:
 			# self.save_data()
 			self.fw.run(configpath=self.configpath)
@@ -225,15 +225,15 @@ class App():
 	def create_config(self):
 		# choose directories first
 		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
-		self.exppath = os.path.join(self.rootdir, self.exp_entry.get())
+		self.expdir = os.path.join(self.rootdir, self.exp_entry.get())
 		# create directory if needed
-		if not os.path.isdir(self.exppath):
+		if not os.path.isdir(self.expdir):
 			print("Creating Experiment Directory within Project Directory")
-			os.mkdir(self.exppath)
+			os.mkdir(self.expdir)
 				# Get session number
 		self.session_n = self.make_session_n()
 		# make proper config name
-		self.configpath = os.path.join(self.exppath, "config_" + self.session_n + ".yaml")
+		self.configpath = os.path.join(self.expdir, "config_" + self.session_n + ".yaml")
 
 
 		# Create config
@@ -242,7 +242,7 @@ class App():
 		config.add_section('fedwatcher')
 		config.set('fedwatcher', 'exp_name', self.exp_entry.get())
 		config.set('fedwatcher', 'root_dir', self.rootdir)
-		config.set('fedwatcher', 'exp_dir', self.exppath)
+		config.set('fedwatcher', 'exp_dir', self.expdir)
 		config.set('fedwatcher', 'session_num', self.session_n)
 		config.set('fedwatcher', 'exp_start', datetime.datetime.now().replace(microsecond=0).isoformat())
 
@@ -260,7 +260,7 @@ class App():
 		This function lists the configs in the directory and returns a proper session number as string
 		This strig gets appended to the end of the config yaml to denote sessions
 		'''
-		files = os.listdir(self.exppath)
+		files = os.listdir(self.expdir)
 		# get config files in exp folder
 		configs = [file for file in files if "config" in file]
 		# if there's no config (new project)
