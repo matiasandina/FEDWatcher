@@ -39,12 +39,12 @@ class Fedwatcher:
     save_interval = 300 # seconds between df saves
     max_size = 100 # max entries before a df is saved and emptied
     last_save = None
-    config_path = None
+    configpath = "../config.yaml"
     save_dir = "Documents"
     exp_name = "Fedwatcher"
     session_num = 0
 
-    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath="FEDWatcher/fedwatcher/config.yaml"):
+    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=None):
         """
         Constructor
         Creates a new Fedwatch object with baud, timeout, and portpaths
@@ -62,26 +62,27 @@ class Fedwatcher:
         self.last_save = time.time()
         self.data_queue = mp.Queue()
 
-        self.configpath = configpath
-        if os.path.isfile(self.configpath):
-            config = configparser.ConfigParser()
-            config.read(self.configpath)
-            try:
-                self.exp_name = config['fedwatcher']['exp_name']
-            except KeyError: 
-                print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
-            try:
-                self.save_dir = config['fedwatcher']['save_dir']
-            except KeyError: 
-                print("config file does not specify save directory. Using Documents as save directory.")
-            try:
-                self.session_num = int(config['fedwatcher']['session_num'])
-            except KeyError:
-                print("config file does not specify session number. Using 0 as session number.")
-            except ValueError:
-                print("config file has an invalid entry for session number")
-        else:
-            print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+        if configpath is not None:
+            self.configpath = configpath
+            if os.path.isfile(self.configpath):
+                config = configparser.ConfigParser()
+                config.read(self.configpath)
+                try:
+                    self.exp_name = config['fedwatcher']['exp_name']
+                except KeyError: 
+                    print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
+                try:
+                    self.save_dir = config['fedwatcher']['save_dir']
+                except KeyError: 
+                    print("config file does not specify save directory. Using Documents as save directory.")
+                try:
+                    self.session_num = int(config['fedwatcher']['session_num'])
+                except KeyError:
+                    print("config file does not specify session number. Using 0 as session number.")
+                except ValueError:
+                    print("config file has an invalid entry for session number")
+            else:
+                print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
 
 
         # Makes it so that on receiving a terminate signal, saves all data
@@ -156,7 +157,7 @@ class Fedwatcher:
         if multi:
           self.main_thread = False
         line = port.readline()
-        now = time.ctime()
+        now = datetime.datetime.now().isoformat()
         if lockInd is not None:
            self.port_locks[lockInd] = False
         line = str(line)[2:-5]
@@ -219,7 +220,7 @@ class Fedwatcher:
 
             time.sleep(0.0009)  # loop without reading a port takes about 0.0001, total time ~1ms per loop
 
-    def run(self, f=None, multi=False, verbose=False):
+    def run(self, f=None, multi=False, verbose=True, configpath=None):
         """
         Main function
         Loops indefinitely in the background, reading all serial ports with ~1 ms delay between each loop
@@ -234,19 +235,29 @@ class Fedwatcher:
             raise RuntimeError("Process is already running")
         self.running = True
 
-        # recheck for changes in config file
-        if os.path.isfile(self.configpath):
-            config = configparser.ConfigParser()
-            config.read(self.configpath)
-            try:
-                self.exp_name = config['fedwatcher']['exp_name']
-            except KeyError: pass
-            try:
-                self.save_dir = config['fedwatcher']['save_dir']
-            except KeyError: pass
-            try:
-                self.session_num = int(config['fedwatcher']['session_num'])
-            except KeyError: pass
+        if configpath is not None:
+            self.configpath = configpath
+            if os.path.isfile(self.configpath):
+                config = configparser.ConfigParser()
+                config.read(self.configpath)
+                try:
+                    self.exp_name = config['fedwatcher']['exp_name']
+                except KeyError: 
+                    print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
+                try:
+                    self.save_dir = config['fedwatcher']['save_dir']
+                except KeyError: 
+                    print("config file does not specify save directory. Using Documents as save directory.")
+                try:
+                    self.session_num = int(config['fedwatcher']['session_num'])
+                except KeyError:
+                    print("config file does not specify session number. Using 0 as session number.")
+                except ValueError:
+                    print("config file has an invalid entry for session number")
+            else:
+                print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+        elif self.configpath is None:
+            print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
 
         # Checks to make all ports are running. If one is not running, attempts to open it
         for port in self.ports:
@@ -273,7 +284,6 @@ class Fedwatcher:
         if self.running:
             self.stop()
         self.ready = False
-        self.manager.join()
         for port in self.ports:
             port.close()
 
@@ -306,12 +316,15 @@ class Fedwatcher:
         """
         used for termination of the runHelper function in multiprocessing
         """
-        if self.main_thread:
-            print("Terminate received, saving all dataframes and terminating main thread")
-            self._save_all_df()
-            self.close_ports()
+        if self.running:
+            if self.main_thread:
+                print("Terminate received, saving all dataframes and terminating main thread")
+                self._save_all_df()
+                self.close_ports()
+            else:
+                print("Terminating non-main thread")
         else:
-            print("Terminating non-main thread")
+            print("Inactive fedwatcher terminated")
         sys.exit(0)
 
     ##

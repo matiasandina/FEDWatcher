@@ -183,7 +183,7 @@ class App():
 		self.exp_button.config(state="normal") 
 		if all_set:
 			# self.save_data()
-			self.fw.run()
+			self.fw.run(configpath=self.configpath)
 		else:
 			tkinter.messagebox.showinfo("Config File Missing",
 			 "Please make sure you have entered at least animal ID.\nDelete entries with empty values and begin again.")
