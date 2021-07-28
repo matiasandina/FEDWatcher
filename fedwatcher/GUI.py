@@ -16,9 +16,13 @@ class App():
 		# aesthetics -------
 		self.window = window
 		self.window.title(window_title)
-		self.bg_color = "#FFA7B1"
+		self.bg_color = "#424547"
+		self.fg_color = "#E1ECF2"
 		self.window.configure(bg=self.bg_color)
-		self.button_color = "#FF5BAA"
+		self.button_color = "#7E8487"
+		self.start_color = "#C9FFCB"
+		self.stop_color = "#FF959D"
+		self.button_width = 30
 
 		# menu left -------
 		# also explore menu bar ?
@@ -29,7 +33,7 @@ class App():
 
 		self.menu_left_title = tkinter.Label(self.menu_left_upper,
 		 text="FEDWatcher",
-		 font=("Helvetica", 16), bg=self.bg_color)
+		 font=("Helvetica", 16), bg=self.bg_color, fg = self.fg_color)
 		self.menu_left_title.grid(row=0,column=0)
 
 		self.menu_left_upper.pack(side="top", fill="both", expand=True)
@@ -37,10 +41,10 @@ class App():
 
 
 		self.exp_name = tkinter.Label(self.menu_left_upper,
-		 text="Exp. Name:", pady=5, bg=self.bg_color, width=10)
+		 text="Exp. Name:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
 		self.exp_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		self.treatment_label = tkinter.Label(self.menu_left_upper,
-		 text="Treatment:", pady=5, bg=self.bg_color, width=10)
+		 text="Treatment:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
 		#self.treatment_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		#self.dose_label = tkinter.Label(self.menu_left_upper,
 		# text="Dose:", pady=5, bg=self.bg_color, width=10)
@@ -81,34 +85,43 @@ class App():
 		self.frame = tkinter.Frame(self.window, bg=self.bg_color)
 
 		self.menu_right_title = tkinter.Label(self.frame,
-		 text="Experiment Control", bg=self.bg_color, font=("Helvetica", 16))
+		 text="Experiment Control", bg=self.bg_color, fg = self.fg_color,
+		font=("Helvetica", 16))
 		self.menu_right_title.pack()
 	
 		# Buttons -----
 		self.create_project = tkinter.Button(self.frame,
 		 text="Create Project",
 		 command=self.create_new_project,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.button_color,fg = self.fg_color, 
+		highlightbackground="black",
+		width = self.button_width)
 		self.create_project.pack(pady=5)
-		# preview camera button
+		# load previous button
 		self.load_previous = tkinter.Button(self.frame,
 		 text="Load Project",
 		 command=self.load_config,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.button_color, fg = self.fg_color,
+		highlightbackground="black",
+		width = self.button_width)
 		self.load_previous.pack(pady=5)
 		# start experiment
 		self.exp_button = tkinter.Button(self.frame,
 		 text="Start Experiment",
 		 command=self.start_experiment,
 		 state=tkinter.DISABLED,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.start_color, fg = self.fg_color, activebackground = "#00B306",
+		highlightbackground="black",
+		width = self.button_width)
 		self.exp_button.pack(pady=5)
 		# stop experiment
 		self.exp_stop_button = tkinter.Button(self.frame,
 		 text="Stop Experiment",
 		 command=self.stop_experiment,
 		 state=tkinter.DISABLED,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.stop_color, fg = self.fg_color, activebackground='#E61523',
+		highlightbackground="black",
+		width = self.button_width)
 		self.exp_stop_button.pack(pady=5)
 
 		# on closing, ask before closing
