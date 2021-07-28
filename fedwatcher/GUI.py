@@ -167,22 +167,23 @@ class App():
 
 	# button callbacks ------
 	def create_new_project(self):
-		# choose directories first
-		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
-		self.exp_dir = os.path.join(self.rootdir, self.exp_entry.get())
-		# create directory if needed
-		if not os.path.isdir(self.exp_dir):
-			print("Creating Experiment Directory within Project Directory")
-			os.mkdir(self.exp_dir)
-		# create the config
-		self.create_config()
-		self.exp_button.config(state="normal")
+		self.all_set = self.check_input()
+		if self.all_set:
+			# choose directories first
+			self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
+			self.exp_dir = os.path.join(self.rootdir, self.exp_entry.get())
+			# create directory if needed
+			if not os.path.isdir(self.exp_dir):
+				print("Creating Experiment Directory within Project Directory")
+				os.mkdir(self.exp_dir)
+			# create the config
+			self.create_config()
+			self.exp_button.config(state="normal")
 		return
 
 
 	def load_config(self):
 		# choose directories first
-
 		self.exp_dir = tkinter.filedialog.askdirectory(title="Choose Previous Experiment Directory")
 		#self.expdir = os.path.join(self.rootdir, self.exp_entry.get())
 		# check for previous configs
@@ -198,44 +199,32 @@ class App():
 			# Create config
 			self.create_config()
 			# only now we enable the experiment button
-			self.exp_button.config(state="normal") 
+			self.exp_button.config(state="normal")
+			self.all_set = True 
 		else:
 			print("No previous configuration found. Create a new project")
 			self.create_new_project()
 
 	def start_experiment(self):
-		#all_set = self.check_input()
-		all_set = True
 		self.exp_stop_button.config(state="normal") 
-		if all_set:
+		if self.all_set:
 			# self.save_data()
 			self.fw.run(configpath=self.configpath)
 		else:
-			tkinter.messagebox.showinfo("Config File Missing",
-			 "Please make sure you have entered at least animal ID.\nDelete entries with empty values and begin again.")
+			tkinter.messagebox.showinfo("Something went wrong",
+			 "This will never happen (?)")
 
 
 	def check_input(self):
-		# if self.configpath is not None (maybe then look for the file?)
-		if os.path.isfile(self.configpath):
-			config = configparser.ConfigParser()
-			config.read(self.configpath)
-		try:
-			self.exp_name = config['fedwatcher']['exp_name']
-		except KeyError: 
-			print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
-		try:
-			self.save_dir = config['fedwatcher']['save_dir']
-		except KeyError: 
-			print("config file does not specify save directory. Using Documents as save directory.")
-		try:
-			self.session_num = int(config['fedwatcher']['session_num'])
-		except KeyError:
-			print("config file does not specify session number. Using 0 as session number.")
-		except ValueError:
-			print("config file has an invalid entry for session number")
+		entry = self.exp_entry.get()
+		accepted_patterns = re.compile(r'[a-zA-Z_0-9]')
+		rejected = [char for char in entry if not accepted_patterns.match(char)]
+		if len(rejected) > 0:
+			tkinter.messagebox.showinfo("Name Not Accepted", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
+			return False
 		else:
-			print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+			return True
+
 
 
 	def on_closing(self):
