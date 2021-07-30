@@ -41,7 +41,7 @@ class Fedwatcher:
     max_size = 100 # max entries before a df is saved and emptied
     last_save = None
     configpath = "../config.yaml"
-    save_dir = "Documents"
+    exp_dir = "Documents"
     exp_name = "Fedwatcher"
     session_num = 0
 
@@ -240,6 +240,7 @@ class Fedwatcher:
         self.last_save = time.time()
         self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
         self.run_process.start()
+        print("FEDWatcher started :)")
 
 
     def stop(self):
@@ -302,7 +303,7 @@ class Fedwatcher:
                 except KeyError: 
                     print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
                 try:
-                    self.save_dir = config['fedwatcher']['save_dir']
+                    self.exp_dir = config['fedwatcher']['exp_dir']
                 except KeyError: 
                     print("config file does not specify save directory. Using Documents as save directory.")
                 try:
@@ -310,11 +311,11 @@ class Fedwatcher:
                 except KeyError:
                     print("config file does not specify session number. Using 0 as session number.")
                 except ValueError:
-                    print("config file has an invalid entry (non-integer) for session number")
+                    print("config file has an invalid entry for session number")
             else:
-                print("No config file found or invalid path given. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+                print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
         elif self.configpath is None:
-            print("No config path was given. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+            print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
 
 
     def exit_gracefully(self, *args):
@@ -360,7 +361,7 @@ class Fedwatcher:
         filename = "FED" + df_data[0]["Device_Number"]+ "_" +  timestr + f"_{self.session_num:02d}.csv"
 
 
-        path = os.path.join(self.save_dir, str(today.year), f"{today.month:02d}")
+        path = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, filename)

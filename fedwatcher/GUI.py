@@ -16,9 +16,13 @@ class App():
 		# aesthetics -------
 		self.window = window
 		self.window.title(window_title)
-		self.bg_color = "#FFA7B1"
+		self.bg_color = "#424547"
+		self.fg_color = "#E1ECF2"
 		self.window.configure(bg=self.bg_color)
-		self.button_color = "#FF5BAA"
+		self.button_color = "#7E8487"
+		self.start_color = "#C9FFCB"
+		self.stop_color = "#FF959D"
+		self.button_width = 30
 
 		# menu left -------
 		# also explore menu bar ?
@@ -29,7 +33,7 @@ class App():
 
 		self.menu_left_title = tkinter.Label(self.menu_left_upper,
 		 text="FEDWatcher",
-		 font=("Helvetica", 16), bg=self.bg_color)
+		 font=("Helvetica", 16), bg=self.bg_color, fg = self.fg_color)
 		self.menu_left_title.grid(row=0,column=0)
 
 		self.menu_left_upper.pack(side="top", fill="both", expand=True)
@@ -37,10 +41,10 @@ class App():
 
 
 		self.exp_name = tkinter.Label(self.menu_left_upper,
-		 text="Exp. Name:", pady=5, bg=self.bg_color, width=10)
+		 text="Exp. Name:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
 		self.exp_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		self.treatment_label = tkinter.Label(self.menu_left_upper,
-		 text="Treatment:", pady=5, bg=self.bg_color, width=10)
+		 text="Treatment:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
 		#self.treatment_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		#self.dose_label = tkinter.Label(self.menu_left_upper,
 		# text="Dose:", pady=5, bg=self.bg_color, width=10)
@@ -81,34 +85,43 @@ class App():
 		self.frame = tkinter.Frame(self.window, bg=self.bg_color)
 
 		self.menu_right_title = tkinter.Label(self.frame,
-		 text="Experiment Control", bg=self.bg_color, font=("Helvetica", 16))
+		 text="Experiment Control", bg=self.bg_color, fg = self.fg_color,
+		font=("Helvetica", 16))
 		self.menu_right_title.pack()
 	
 		# Buttons -----
 		self.create_project = tkinter.Button(self.frame,
 		 text="Create Project",
 		 command=self.create_new_project,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.button_color,fg = self.fg_color, 
+		highlightbackground="black",
+		width = self.button_width)
 		self.create_project.pack(pady=5)
-		# preview camera button
+		# load previous button
 		self.load_previous = tkinter.Button(self.frame,
 		 text="Load Project",
 		 command=self.load_config,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.button_color, fg = self.fg_color,
+		highlightbackground="black",
+		width = self.button_width)
 		self.load_previous.pack(pady=5)
 		# start experiment
 		self.exp_button = tkinter.Button(self.frame,
 		 text="Start Experiment",
 		 command=self.start_experiment,
 		 state=tkinter.DISABLED,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.start_color, fg = self.fg_color, activebackground = "#00B306",
+		highlightbackground="black",
+		width = self.button_width)
 		self.exp_button.pack(pady=5)
 		# stop experiment
 		self.exp_stop_button = tkinter.Button(self.frame,
 		 text="Stop Experiment",
 		 command=self.stop_experiment,
 		 state=tkinter.DISABLED,
-		 pady=20, bg=self.button_color, highlightbackground="black")
+		 pady=20, bg=self.stop_color, fg = self.fg_color, activebackground='#E61523',
+		highlightbackground="black",
+		width = self.button_width)
 		self.exp_stop_button.pack(pady=5)
 
 		# on closing, ask before closing
@@ -167,49 +180,64 @@ class App():
 
 	# button callbacks ------
 	def create_new_project(self):
-		self.create_config()
-		self.exp_button.config(state="normal")
+		self.all_set = self.check_input()
+		if self.all_set:
+			# choose directories first
+			self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
+			self.exp_dir = os.path.join(self.rootdir, self.exp_entry.get())
+			# create directory if needed
+			if not os.path.isdir(self.exp_dir):
+				print("Creating Experiment Directory within Project Directory")
+				os.mkdir(self.exp_dir)
+			# create the config
+			self.create_config()
+			self.exp_button.config(state="normal")
 		return
 
 
 	def load_config(self):
-		#os.system("python3 /home/pi/homecage_quantification/preview_camera.py")
-		# only now we enable the experiment button
-		self.exp_button.config(state="normal") 
+		# choose directories first
+		self.exp_dir = tkinter.filedialog.askdirectory(title="Choose Previous Experiment Directory")
+		#self.expdir = os.path.join(self.rootdir, self.exp_entry.get())
+		# check for previous configs
+		files = os.listdir(self.exp_dir)
+		# get config files in exp folder
+		configs = [file for file in files if "config" in file]
+		if len(configs) > 0:
+			print("Adding new session to previous experiment")
+			# get the old experiment name from the folder structure
+			exp_name = os.path.basename(os.path.dirname(self.exp_dir))
+			self.exp_entry.delete(0, tkinter.END)
+			self.exp_entry.insert(0, exp_name)
+			# Create config
+			self.create_config()
+			# only now we enable the experiment button
+			self.exp_button.config(state="normal")
+			self.all_set = True 
+		else:
+			print("No previous configuration found. Create a new project")
+			self.create_new_project()
 
 	def start_experiment(self):
-		#all_set = self.check_input()
-		all_set = True
-		self.exp_button.config(state="normal") 
-		if all_set:
+		self.exp_stop_button.config(state="normal") 
+		if self.all_set:
 			# self.save_data()
 			self.fw.run(configpath=self.configpath)
 		else:
-			tkinter.messagebox.showinfo("Config File Missing",
-			 "Please make sure you have entered at least animal ID.\nDelete entries with empty values and begin again.")
+			tkinter.messagebox.showinfo("Something went wrong",
+			 "This will never happen (?)")
 
 
 	def check_input(self):
-		# if self.configpath is not None (maybe then look for the file?)
-		if os.path.isfile(self.configpath):
-			config = configparser.ConfigParser()
-			config.read(self.configpath)
-		try:
-			self.exp_name = config['fedwatcher']['exp_name']
-		except KeyError: 
-			print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
-		try:
-			self.save_dir = config['fedwatcher']['save_dir']
-		except KeyError: 
-			print("config file does not specify save directory. Using Documents as save directory.")
-		try:
-			self.session_num = int(config['fedwatcher']['session_num'])
-		except KeyError:
-			print("config file does not specify session number. Using 0 as session number.")
-		except ValueError:
-			print("config file has an invalid entry for session number")
+		entry = self.exp_entry.get()
+		accepted_patterns = re.compile(r'[a-zA-Z_0-9]')
+		rejected = [char for char in entry if not accepted_patterns.match(char)]
+		if len(rejected) > 0:
+			tkinter.messagebox.showinfo("Name Not Accepted", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
+			return False
 		else:
-			print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+			return True
+
 
 
 	def on_closing(self):
@@ -223,17 +251,10 @@ class App():
 		return
 
 	def create_config(self):
-		# choose directories first
-		self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
-		self.exppath = os.path.join(self.rootdir, self.exp_entry.get())
-		# create directory if needed
-		if not os.path.isdir(self.exppath):
-			print("Creating Experiment Directory within Project Directory")
-			os.mkdir(self.exppath)
-				# Get session number
+		# Get session number
 		self.session_n = self.make_session_n()
 		# make proper config name
-		self.configpath = os.path.join(self.exppath, "config_" + self.session_n + ".yaml")
+		self.configpath = os.path.join(self.exp_dir, "config_" + self.session_n + ".yaml")
 
 
 		# Create config
@@ -242,7 +263,7 @@ class App():
 		config.add_section('fedwatcher')
 		config.set('fedwatcher', 'exp_name', self.exp_entry.get())
 		config.set('fedwatcher', 'root_dir', self.rootdir)
-		config.set('fedwatcher', 'exp_dir', self.exppath)
+		config.set('fedwatcher', 'exp_dir', self.exp_dir)
 		config.set('fedwatcher', 'session_num', self.session_n)
 		config.set('fedwatcher', 'exp_start', datetime.datetime.now().replace(microsecond=0).isoformat())
 
@@ -260,7 +281,7 @@ class App():
 		This function lists the configs in the directory and returns a proper session number as string
 		This strig gets appended to the end of the config yaml to denote sessions
 		'''
-		files = os.listdir(self.exppath)
+		files = os.listdir(self.exp_dir)
 		# get config files in exp folder
 		configs = [file for file in files if "config" in file]
 		# if there's no config (new project)
@@ -277,12 +298,6 @@ class App():
 			new_session = str(session_max + 1).zfill(2)
 		return new_session
 
-	def load_config(self):
-		# this function reads a previous config
-		config = ConfigParser()
-		config.read('config.yaml')
-		# TODO: should do something here
-		return
 	def stop_experiment(self):
 		# TODO: add date of stopping the session
 		# this stops fedwatcher but doesn't close ports

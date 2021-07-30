@@ -1,4 +1,4 @@
 [fedwatcher]
 exp_name=experiment1
-save_dir=Documents
+exp_dir=Documents
 session_num=1
