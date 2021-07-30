@@ -45,24 +45,37 @@ class App():
 		self.exp_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		self.treatment_label = tkinter.Label(self.menu_left_upper,
 		 text="Treatment:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
-		#self.treatment_entry = tkinter.Entry(self.menu_left_upper, width=20)
-		#self.dose_label = tkinter.Label(self.menu_left_upper,
-		# text="Dose:", pady=5, bg=self.bg_color, width=10)
-		#self.dose_entry = tkinter.Entry(self.menu_left_upper, width=20)
-		#self.comment_label = tkinter.Label(self.menu_left_upper,
-		# text="Comment:", pady=5, bg=self.bg_color, width=10)
-		#self.comment_entry = tkinter.Entry(self.menu_left_upper, width=20)
+		self.email_label = tkinter.Label(self.menu_left_upper,
+		 text="Email:", pady=5, bg=self.bg_color, width=10)
+		self.email_entry = tkinter.Entry(self.menu_left_upper, width=20)
+		self.password_label = tkinter.Label(self.menu_left_upper,
+		 text="Password:", pady=5, bg=self.bg_color, width=10)
+		self.password_entry = tkinter.Entry(self.menu_left_upper, width=20)
+
+		# Checkbox for remembering
+		self.remember = tkinter.IntVar(value = 0)
+		self.delete = tkinter.IntVar(value = 1)
+
+		self.c1 = tkinter.Checkbutton(self.menu_left_upper, text='Do not remember me',
+			variable=self.delete, onvalue=1, offvalue=0, command=self.delete_info, 
+			bg = self.bg_color, fg = self.fg_color, pady = 5, selectcolor = "#000000")
+		self.c2 = tkinter.Checkbutton(self.menu_left_upper, text='Remember me',
+			variable=self.remember, onvalue=1, offvalue=0, command=self.remember_info, 
+			bg = self.bg_color, fg = self.fg_color, pady = 1, selectcolor = "#000000")
 
 
 		# make the grid of entries
+		# labels
 		self.exp_name.grid(row=1, column=0,sticky="ne")
-		#self.treatment_label.grid(row=2,column=0,sticky="ne")
-		#self.dose_label.grid(row=3, column=0, sticky="ne")
-		#self.comment_label.grid(row=4,column=0,padx=1, sticky="ne")
+		self.email_label.grid(row=2,column=0,sticky="ne")
+		self.password_label.grid(row=3, column=0, sticky="ne")
+		# entries
 		self.exp_entry.grid(row=1,column=1, sticky='ew',padx=1)
-		#self.treatment_entry.grid(row=2,column=1, sticky='ew',padx=1)
-		#self.dose_entry.grid(row=3,column=1, sticky='ew',padx=1)
-		#self.comment_entry.grid(row=4,column=1, sticky='ew',padx=1)
+		self.email_entry.grid(row=2,column=1, sticky='ew',padx=1)
+		self.password_entry.grid(row=3,column=1, sticky='ew',padx=1)
+		# checkbox
+		self.c1.grid(row=4, column=1, sticky='ne', padx=1)
+		self.c2.grid(row=5, column=1, sticky='ne', padx=1)
 
 		# insert and delete stuff -------
 		#self.insert_button = tkinter.Button(self.menu_left_upper, text="Insert",
@@ -303,6 +316,12 @@ class App():
 		# this stops fedwatcher but doesn't close ports
 		self.fw.stop()
 		print("Fedwatcher has been stopped!")
+		return
+
+	# email info
+	def remember_info(self):
+		return
+	def delete_info(self):
 		return
 
 
