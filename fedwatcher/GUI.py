@@ -56,10 +56,10 @@ class App():
 		self.remember = tkinter.IntVar(value = 0)
 		self.delete = tkinter.IntVar(value = 1)
 
-		self.c1 = tkinter.Checkbutton(self.menu_left_upper, text='Do not remember me',
+		self.delete_check = tkinter.Checkbutton(self.menu_left_upper, text='Do not remember me',
 			variable=self.delete, onvalue=1, offvalue=0, command=self.delete_info, 
 			bg = self.bg_color, fg = self.fg_color, pady = 5, selectcolor = "#000000")
-		self.c2 = tkinter.Checkbutton(self.menu_left_upper, text='Remember me',
+		self.remember_check = tkinter.Checkbutton(self.menu_left_upper, text='Remember me',
 			variable=self.remember, onvalue=1, offvalue=0, command=self.remember_info, 
 			bg = self.bg_color, fg = self.fg_color, pady = 1, selectcolor = "#000000")
 
@@ -74,8 +74,8 @@ class App():
 		self.email_entry.grid(row=2,column=1, sticky='ew',padx=1)
 		self.password_entry.grid(row=3,column=1, sticky='ew',padx=1)
 		# checkbox
-		self.c1.grid(row=4, column=1, sticky='ne', padx=1)
-		self.c2.grid(row=5, column=1, sticky='ne', padx=1)
+		self.delete_check.grid(row=4, column=1, sticky='ne', padx=1)
+		self.remember_check.grid(row=5, column=1, sticky='ne', padx=1)
 
 		# insert and delete stuff -------
 		#self.insert_button = tkinter.Button(self.menu_left_upper, text="Insert",
@@ -234,8 +234,15 @@ class App():
 	def start_experiment(self):
 		self.exp_stop_button.config(state="normal") 
 		if self.all_set:
-			# self.save_data()
-			self.fw.run(configpath=self.configpath)
+			if len(self.email_entry.get()) > 0:
+				email_ok = self.fw.register_email(email=self.email_entry.get(), password=self.password_entry.get())
+				# run fedwatcher
+				print("Running FEDWatcher with notifications to " + self.email_entry.get())
+				self.fw.run(configpath=self.configpath)
+			else:
+				# run fedwatcher with no email
+				print("Running FEDWatcher")
+				self.fw.run(configpath=self.configpath)
 		else:
 			tkinter.messagebox.showinfo("Something went wrong",
 			 "This will never happen (?)")
@@ -255,6 +262,10 @@ class App():
 
 	def on_closing(self):
 		if tkMessageBox.askyesno("Quit", "Do you want to quit?"):
+			# kill the password saving
+			if self.remember.get() == 0:
+				print("Erasing email information")
+				self.fw.delete_email()
 			# this first stops fedwatcher, fedwatcher will handle data saving
 			self.fw.close()
 			self.window.destroy()
@@ -320,8 +331,12 @@ class App():
 
 	# email info
 	def remember_info(self):
+		# toggle the other option
+		self.delete.set(value = 0)
 		return
 	def delete_info(self):
+		# toggle the other option
+		self.remember.set(value = 0)
 		return
 
 
