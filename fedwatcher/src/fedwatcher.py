@@ -9,6 +9,7 @@ import sys
 import configparser
 import yagmail
 import keyring
+from smtplib import SMTPServerDisconnected, SMTPAuthenticationError
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -131,12 +132,16 @@ class Fedwatcher:
                 self.ready = True
 
     def sendAlert(self, fedNumber):
+        """
+        Sends an alert using yagmail that a FED is jammed
+        """
         print(f"jam detected on fed {fedNumber}")
         if self.email_enabled:
             try:
                 subject = f"FEDWatcher alert for FED{fedNumber}: Jam"
                 body = f"Jam detected on FED{fedNumber}"
                 self.send_email(subject, body)
+                print("Email sent")
             except Exception as e: # catch all exception, otherwise FEDWatcher will halt and stop monitoring
                 print(f"Error occurred in sending email {e}")
 
@@ -434,11 +439,19 @@ class Fedwatcher:
         """
         try:
             yagmail.register(email, password)
+            self.yag = yagmail.SMTP(self.email)
             self.email_enabled = True
             self.email = email
+            return True
         except yagmail.YagInvalidEmailAddress:
             print("An invalid email address was given")
-            self.email_enabled = False
+            return False
+        except SMTPAuthenticationError:
+            print("Email or password is incorrect")
+            return False
+        except SMTPServerDisconnected:
+            print("Unable to connect to email")
+            return False
 
     def delete_email(self):
         """
@@ -449,13 +462,13 @@ class Fedwatcher:
 
     def send_email(self, subject, body):
         """
+        Sends an email using yagmail. register_email() must be called before this
         Args:
             to: email to be sent to
             subject: subject of the email
             body: message to be sent
         """
-        yag = yagmail.SMTP(self.email)
-        yag.send(subject=subject, contents=body)
+        self.yag.send(subject=subject, contents=body)
 
 
 if __name__ == "__main__":
