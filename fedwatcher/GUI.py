@@ -50,7 +50,7 @@ class App():
 		self.email_entry = tkinter.Entry(self.menu_left_upper, width=20)
 		self.password_label = tkinter.Label(self.menu_left_upper,
 		 text="Password:", pady=5, bg=self.bg_color, width=10)
-		self.password_entry = tkinter.Entry(self.menu_left_upper, width=20)
+		self.password_entry = tkinter.Entry(self.menu_left_upper, show="*", width=20)
 
 		# Checkbox for remembering
 		self.remember = tkinter.IntVar(value = 0)
