@@ -8,6 +8,7 @@ import os
 import sys
 import configparser
 import yagmail
+import keyring
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -428,11 +429,23 @@ class Fedwatcher:
 
     def register_email(self, email, password):
         """
-        When called, enables email alerts, sending from email to recipient using yagmail
+        When called, enables email alerts, sending from email to themself using yagmail
+        Password stored using keyring and can be deleted using delete function
         """
-        yagmail.register(email, password)
-        self.email_enabled = True
-        self.email = email
+        try:
+            yagmail.register(email, password)
+            self.email_enabled = True
+            self.email = email
+        except yagmail.YagInvalidEmailAddress:
+            print("An invalid email address was given")
+            self.email_enabled = False
+
+    def delete_email(self):
+        """
+        Must already have an email registered. Deletes the email password
+        """
+        keyring.delete_password("yagmail", self.email)
+        self.email_enabled = False
 
     def send_email(self, subject, body):
         """
