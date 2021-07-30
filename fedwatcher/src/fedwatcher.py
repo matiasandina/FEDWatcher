@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import sys
 import configparser
+import yagmail
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -44,7 +45,11 @@ class Fedwatcher:
     exp_name = "Fedwatcher"
     session_num = 0
 
-    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=None):
+    # Email variables
+    email_enabled = False
+    email = None
+
+    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml")):
         """
         Constructor
         Creates a new Fedwatch object with baud, timeout, and portpaths
@@ -64,26 +69,7 @@ class Fedwatcher:
 
         if configpath is not None:
             self.configpath = configpath
-            if os.path.isfile(self.configpath):
-                config = configparser.ConfigParser()
-                config.read(self.configpath)
-                try:
-                    self.exp_name = config['fedwatcher']['exp_name']
-                except KeyError: 
-                    print("config file does not specify experiment name. Using Fedwatcher as experiment name.")
-                try:
-                    self.save_dir = config['fedwatcher']['save_dir']
-                except KeyError: 
-                    print("config file does not specify save directory. Using Documents as save directory.")
-                try:
-                    self.session_num = int(config['fedwatcher']['session_num'])
-                except KeyError:
-                    print("config file does not specify session number. Using 0 as session number.")
-                except ValueError:
-                    print("config file has an invalid entry for session number")
-            else:
-                print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
-
+            self.check_config()
 
         # Makes it so that on receiving a terminate signal, saves all data
         signal.signal(signal.SIGINT, self.exit_gracefully)
@@ -145,6 +131,13 @@ class Fedwatcher:
 
     def sendAlert(self, fedNumber):
         print(f"jam detected on fed {fedNumber}")
+        if self.email_enabled:
+            try:
+                subject = f"FEDWatcher alert for FED{fedNumber}: Jam"
+                body = f"Jam detected on FED{fedNumber}"
+                self.send_email(subject, body)
+            except Exception as e: # catch all exception, otherwise FEDWatcher will halt and stop monitoring
+                print(f"Error occurred in sending email {e}")
 
     def readPort(self, port, f=None, multi=False, verbose=False, lockInd=None):
         """
@@ -235,8 +228,72 @@ class Fedwatcher:
             raise RuntimeError("Process is already running")
         self.running = True
 
-        if configpath is not None:
+        if configpath is not None: 
             self.configpath = configpath
+            self.check_config()
+
+        # Checks to make all ports are running. If one is not running, attempts to open it
+        for port in self.ports:
+            if not port.is_open:
+                port.open()
+
+        self.last_save = time.time()
+        self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
+        self.run_process.start()
+
+
+    def stop(self):
+        """
+        Stops all watcher processes and saves dataframes to csv
+        """
+        if not self.running:
+            raise RuntimeError("Process is not running")
+        self.run_process.terminate()
+        self.running = False
+
+
+    def close(self):
+        """
+        Stops running of program and closes all serial ports
+        """
+        if self.running:
+            self.stop()
+        self.ready = False
+        for port in self.ports:
+            port.close()
+
+
+    def close_ports(self):
+        """
+        Closes all serial ports without stopping process
+        """
+        for port in self.ports:
+            port.close()
+
+
+    def get_ports(self):
+        """
+        Returns tuple of active ports
+        """
+        return self.ports
+
+
+    def is_ready(self):
+        """
+        Returns True if set up and ports are open, else false
+        """
+        return self.ready
+
+
+    def is_running(self):
+        """
+        Returns True if running, else false
+        """
+        return self.running
+
+    
+    def check_config(self):
+        if self.configpath is not None:
             if os.path.isfile(self.configpath):
                 config = configparser.ConfigParser()
                 config.read(self.configpath)
@@ -253,64 +310,12 @@ class Fedwatcher:
                 except KeyError:
                     print("config file does not specify session number. Using 0 as session number.")
                 except ValueError:
-                    print("config file has an invalid entry for session number")
+                    print("config file has an invalid entry (non-integer) for session number")
             else:
-                print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+                print("No config file found or invalid path given. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
         elif self.configpath is None:
-            print("No config file found. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
+            print("No config path was given. Using experiment name 'Fedwatcher' in save directory 'Documents' with session number 0.")
 
-        # Checks to make all ports are running. If one is not running, attempts to open it
-        for port in self.ports:
-            if not port.is_open:
-                port.open()
-
-        self.last_save = time.time()
-        self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
-        self.run_process.start()
-
-    def stop(self):
-        """
-        Stops all watcher processes and saves dataframes to csv
-        """
-        if not self.running:
-            raise RuntimeError("Process is not running")
-        self.run_process.terminate()
-        self.running = False
-
-    def close(self):
-        """
-        Stops running of program and closes all serial ports
-        """
-        if self.running:
-            self.stop()
-        self.ready = False
-        for port in self.ports:
-            port.close()
-
-    def close_ports(self):
-        """
-        Closes all serial ports without stopping process
-        """
-        for port in self.ports:
-            port.close()
-
-    def get_ports(self):
-        """
-        Returns tuple of active ports
-        """
-        return self.ports
-
-    def is_ready(self):
-        """
-        Returns True if set up and ports are open, else false
-        """
-        return self.ready
-
-    def is_running(self):
-        """
-        Returns True if running, else false
-        """
-        return self.running
 
     def exit_gracefully(self, *args):
         """
@@ -326,6 +331,7 @@ class Fedwatcher:
         else:
             print("Inactive fedwatcher terminated")
         sys.exit(0)
+
 
     ##
     #  Formatting Functions
@@ -354,7 +360,7 @@ class Fedwatcher:
         filename = "FED" + df_data[0]["Device_Number"]+ "_" +  timestr + f"_{self.session_num:02d}.csv"
 
 
-        path = os.path.join(self.save_dir, self.exp_name, str(today.year), f"{today.month:02d}")
+        path = os.path.join(self.save_dir, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, filename)
@@ -414,6 +420,29 @@ class Fedwatcher:
             return self._new_df()
         else:
             return self._new_df(self.df_dict[Device_Number])
+
+    ###
+    #   Mail Function
+    ###
+
+    def register_email(self, email, password):
+        """
+        When called, enables email alerts, sending from email to recipient using yagmail
+        """
+        yagmail.register(email, password)
+        self.email_enabled = True
+        self.email = email
+
+    def send_email(self, subject, body):
+        """
+        Args:
+            to: email to be sent to
+            subject: subject of the email
+            body: message to be sent
+        """
+        yag = yagmail.SMTP(self.email)
+        yag.send(subject=subject, contents=body)
+
 
 if __name__ == "__main__":
     try:

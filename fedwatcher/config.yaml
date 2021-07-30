@@ -2,9 +2,3 @@
 exp_name=experiment1
 save_dir=Documents
 session_num=1
-
-[email_credentials]
-enabled=True
-user=example@example.com
-pass=password
-sendto=example@example.com
