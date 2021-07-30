@@ -440,8 +440,8 @@ class Fedwatcher:
         """
         try:
             self.email = email
-            yagmail.register(email, password)
-            self.yag = yagmail.SMTP(self.email)
+            # yagmail.register(email, password)  # for later, keyring storing of password
+            self.yag = yagmail.SMTP(self.email, password)
             self.email_enabled = True
             return True
         except YagInvalidEmailAddress:
@@ -449,6 +449,7 @@ class Fedwatcher:
             return False
         except keyring.errors.KeyringLocked:
             print("keyring is locked, please enter keyring password")
+            self.yag = yagmail.SMTP(self.email, password)
             return False
         except SMTPAuthenticationError as e:
             print(f"Email or password is incorrect {e}")
