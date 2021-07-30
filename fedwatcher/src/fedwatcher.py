@@ -8,6 +8,7 @@ import os
 import sys
 import configparser
 import yagmail
+from yagmail.error import YagInvalidEmailAddress
 import keyring
 from smtplib import SMTPServerDisconnected, SMTPAuthenticationError
 
@@ -438,19 +439,22 @@ class Fedwatcher:
         Password stored using keyring and can be deleted using delete function
         """
         try:
+            self.email = email
             yagmail.register(email, password)
             self.yag = yagmail.SMTP(self.email)
             self.email_enabled = True
-            self.email = email
             return True
-        except yagmail.YagInvalidEmailAddress:
+        except YagInvalidEmailAddress:
             print("An invalid email address was given")
             return False
-        except SMTPAuthenticationError:
-            print("Email or password is incorrect")
+        except keyring.errors.KeyringLocked:
+            print("keyring is locked, please enter keyring password")
             return False
-        except SMTPServerDisconnected:
-            print("Unable to connect to email")
+        except SMTPAuthenticationError as e:
+            print(f"Email or password is incorrect {e}")
+            return False
+        except SMTPServerDisconnected as e:
+            print(f"Unable to connect to email {e}")
             return False
 
     def delete_email(self):
