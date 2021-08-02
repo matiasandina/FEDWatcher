@@ -10,6 +10,7 @@ from configparser import ConfigParser
 from src.fedwatcher import Fedwatcher
 import re
 import datetime
+import webbrowser
 
 class App():
 	def __init__(self, window, window_title):
@@ -23,23 +24,21 @@ class App():
 		self.start_color = "#C9FFCB"
 		self.stop_color = "#FF959D"
 		self.button_width = 30
+		self.left_pad = 20
 
-		# menu left -------
+		# top menu
+		self.menu_top = tkinter.Frame(self.window, bg="red")
+		self.app_title = tkinter.Label(self.menu_top, text = "FEDWatcher", font = ("Helvetica", 20), bg = self.bg_color, fg = self.fg_color)
+		# Middle menu left -------
 		# also explore menu bar ?
 		# https://pythonspot.com/tk-menubar/
-		self.menu_left = tkinter.Frame(self.window, width=80, bg=self.bg_color)
-		self.menu_left_upper = tkinter.Frame(self.menu_left, width=80, height=80, bg=self.bg_color)
-		self.menu_left_lower = tkinter.Frame(self.menu_left, width=80, bg=self.bg_color)
-
+		self.menu_left = tkinter.Frame(self.window, width=80, height=80, bg=self.bg_color)
+		self.menu_left_upper = tkinter.Frame(self.menu_left, width=80, height=80, bg=self.bg_color, highlightcolor="black", highlightthickness=0)
+		
 		self.menu_left_title = tkinter.Label(self.menu_left_upper,
-		 text="FEDWatcher",
+		 text="Experiment Info",
 		 font=("Helvetica", 16), bg=self.bg_color, fg = self.fg_color)
-		self.menu_left_title.grid(row=0,column=0)
-
-		self.menu_left_upper.pack(side="top", fill="both", expand=True)
-		self.menu_left_lower.pack(side="top", fill="both", expand=True)
-
-
+		
 		self.exp_name = tkinter.Label(self.menu_left_upper,
 		 text="Exp. Name:", pady=5, bg=self.bg_color, width=10, fg = self.fg_color)
 		self.exp_entry = tkinter.Entry(self.menu_left_upper, width=20)
@@ -52,16 +51,17 @@ class App():
 		 text="Password:", pady=5, bg=self.bg_color, width=10)
 		self.password_entry = tkinter.Entry(self.menu_left_upper, show="*", width=20)
 
-		# Checkbox for remembering
-		self.remember = tkinter.IntVar(value = 0)
-		self.delete = tkinter.IntVar(value = 1)
 
-		self.delete_check = tkinter.Checkbutton(self.menu_left_upper, text='Do not remember me',
-			variable=self.delete, onvalue=1, offvalue=0, command=self.delete_info, 
-			bg = self.bg_color, fg = self.fg_color, pady = 5, selectcolor = "#000000")
-		self.remember_check = tkinter.Checkbutton(self.menu_left_upper, text='Remember me',
-			variable=self.remember, onvalue=1, offvalue=0, command=self.remember_info, 
-			bg = self.bg_color, fg = self.fg_color, pady = 1, selectcolor = "#000000")
+		# Checkbox for remembering
+		#self.remember = tkinter.IntVar(value = 0)
+		#self.delete = tkinter.IntVar(value = 1)
+
+		#self.delete_check = tkinter.Checkbutton(self.menu_left_upper, text='Do not remember me',
+		#	variable=self.delete, onvalue=1, offvalue=0, command=self.delete_info, 
+		#	bg = self.bg_color, fg = self.fg_color, pady = 5, selectcolor = "#000000")
+		#self.remember_check = tkinter.Checkbutton(self.menu_left_upper, text='Remember me',
+		#	variable=self.remember, onvalue=1, offvalue=0, command=self.remember_info, 
+		#	bg = self.bg_color, fg = self.fg_color, pady = 1, selectcolor = "#000000")
 
 
 		# make the grid of entries
@@ -74,8 +74,8 @@ class App():
 		self.email_entry.grid(row=2,column=1, sticky='ew',padx=1)
 		self.password_entry.grid(row=3,column=1, sticky='ew',padx=1)
 		# checkbox
-		self.delete_check.grid(row=4, column=1, sticky='ne', padx=1)
-		self.remember_check.grid(row=5, column=1, sticky='ne', padx=1)
+		#self.delete_check.grid(row=4, column=1, sticky='ne', padx=1)
+		#self.remember_check.grid(row=5, column=1, sticky='ne', padx=1)
 
 		# insert and delete stuff -------
 		#self.insert_button = tkinter.Button(self.menu_left_upper, text="Insert",
@@ -95,15 +95,15 @@ class App():
 		#self.delete_button.grid(row=4,column=4, sticky='nsew', pady=5)
 
 		# right area ----------
-		self.frame = tkinter.Frame(self.window, bg=self.bg_color)
+		self.menu_right = tkinter.Frame(self.window, bg=self.bg_color)
 
-		self.menu_right_title = tkinter.Label(self.frame,
+		self.menu_right_title = tkinter.Label(self.menu_right,
 		 text="Experiment Control", bg=self.bg_color, fg = self.fg_color,
 		font=("Helvetica", 16))
 		self.menu_right_title.pack()
 	
 		# Buttons -----
-		self.create_project = tkinter.Button(self.frame,
+		self.create_project = tkinter.Button(self.menu_right,
 		 text="Create Project",
 		 command=self.create_new_project,
 		 pady=20, bg=self.button_color,fg = self.fg_color, 
@@ -111,7 +111,7 @@ class App():
 		width = self.button_width)
 		self.create_project.pack(pady=5)
 		# load previous button
-		self.load_previous = tkinter.Button(self.frame,
+		self.load_previous = tkinter.Button(self.menu_right,
 		 text="Load Project",
 		 command=self.load_config,
 		 pady=20, bg=self.button_color, fg = self.fg_color,
@@ -119,7 +119,7 @@ class App():
 		width = self.button_width)
 		self.load_previous.pack(pady=5)
 		# start experiment
-		self.exp_button = tkinter.Button(self.frame,
+		self.exp_button = tkinter.Button(self.menu_right,
 		 text="Start Experiment",
 		 command=self.start_experiment,
 		 state=tkinter.DISABLED,
@@ -128,7 +128,7 @@ class App():
 		width = self.button_width)
 		self.exp_button.pack(pady=5)
 		# stop experiment
-		self.exp_stop_button = tkinter.Button(self.frame,
+		self.exp_stop_button = tkinter.Button(self.menu_right,
 		 text="Stop Experiment",
 		 command=self.stop_experiment,
 		 state=tkinter.DISABLED,
@@ -137,18 +137,30 @@ class App():
 		width = self.button_width)
 		self.exp_stop_button.pack(pady=5)
 
+		# Bottom area ----
+		self.bottom_area = tkinter.Frame(self.window)
+		self.bottom_text = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
+		self.bottom_text.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher"))
+
 		# on closing, ask before closing
 		self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-
-		self.menu_left.grid(row=0, column=0, sticky="nsew")
-		self.frame.grid(row=0, column=1, sticky="nsew")
-		#self.canvas_area.grid(row=1, column=1, sticky="nsew") 
-		#self.status_frame.grid(row=2, column=0, columnspan=2, sticky="ew")
-
+		# Grid arrangements ####
+		self.menu_top.grid(row=0, column=0, sticky="w", padx=self.left_pad)
+		self.app_title.pack(side="left")
+		self.menu_left.grid(row=1, column=0, sticky="nsew", padx=self.left_pad)
+		# we want to use pack here
+		self.menu_left_upper.pack(side="top", fill="both", expand=True)
+		self.menu_left_title.grid(row=0,column=0)
+		# if we use the grid method the menu_left_upper will get confined 
+		#self.menu_left_upper.grid(row=1, column=0, sticky="nsew")
+		self.menu_right.grid(row=1, column=1, sticky="nsew")
 		# this gives priority to entry boxes
 		# because of this, they will resize and fill space with the menu_left_upper
 		self.menu_left_upper.grid_columnconfigure(1, weight=1)
+
+		self.bottom_area.grid(row=2, column=0, sticky='w', padx=self.left_pad)
+		self.bottom_text.pack()
 
 		# Start FEDWatcher ---
 		self.fw = Fedwatcher()
@@ -169,27 +181,6 @@ class App():
 		#		mac = "00:00:00:00:00:00"
 		# mac = mac[0:17]
 		return mac
-
-
-	# def insert_data(self):
-	# 	"""
-	# 	Insertion method.
-	# 	"""
-	# 	self.treeview.insert('', 'end',
-	# 	                     values=(
-	# 	                     	self.get_mac(),
-	# 	                     	datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-	# 	                     	self.exp_entry.get(),
-	# 	                     	self.treatment_entry.get(),
-	# 	                        self.dose_entry.get(),
-	# 	                        self.comment_entry.get()))
-	# 	# enable button to delete
-	# 	self.delete_button.configure(state=tkinter.NORMAL)
-
-	# def delete_entry(self):
-	# 	selected_items = self.treeview.selection()        
-	# 	for selected_item in selected_items:          
-	# 		self.treeview.delete(selected_item)
 
 	# button callbacks ------
 	def create_new_project(self):
@@ -259,21 +250,6 @@ class App():
 			return True
 
 
-
-	def on_closing(self):
-		if tkMessageBox.askyesno("Quit", "Do you want to quit?"):
-			# kill the password saving
-			if self.remember.get() == 0:
-				print("Erasing email information")
-				self.fw.delete_email()
-			# this first stops fedwatcher, fedwatcher will handle data saving
-			self.fw.close()
-			self.window.destroy()
-
-	def read_credentials(self):
-		# This should read credentials for email and do something about it
-		return
-
 	def create_config(self):
 		# Get session number
 		self.session_n = self.make_session_n()
@@ -329,32 +305,46 @@ class App():
 		print("Fedwatcher has been stopped!")
 		return
 
-	# email info
-	def remember_info(self):
-		# toggle the other option
-		self.delete.set(value = 0)
-		return
-	def delete_info(self):
-		# toggle the other option
-		self.remember.set(value = 0)
-		return
+	# # email info
+	# def remember_info(self):
+	# 	# toggle the other option
+	# 	self.delete.set(value = 0)
+	# 	return
+	# def delete_info(self):
+	# 	# toggle the other option
+	# 	self.remember.set(value = 0)
+	# 	return
 
+	def on_closing(self):
+		if tkMessageBox.askyesno("Quit", "Do you want to quit?"):
+			# # kill the password saving
+			# if self.remember.get() == 0:
+			# 	print("Erasing email information")
+			# 	self.fw.delete_email()
+			# this first stops fedwatcher, fedwatcher will handle data saving
+			self.fw.close()
+			self.window.destroy()
 
 def create_app(root):
-	App(window = root, window_title = "Experiment GUI")
+	App(window = root, window_title = "FEDWatcher")
+
+def open_url(url):
+    webbrowser.open_new(url)
+
 
 if __name__ == '__main__':
 	# hard-coded current directory
 	#os.chdir("/home/pi/homecage_quantification")
 	root = tkinter.Tk()
 	# widthxheight+300+300 pxposition from the leftcorner of the monitor
-	root.geometry("800x350+300+300")
+	root.geometry("800x400+300+300")
 	# resize columns with window
 	root.columnconfigure(0, weight=1, minsize=200)
 	root.columnconfigure(1, weight=1, minsize=200)
 	# set minimum height for row 0 and 2
-	root.rowconfigure(0, minsize=50)
-	root.rowconfigure(2, minsize=20)
+	root.rowconfigure(0, minsize=50, weight=1)
+	root.rowconfigure(1, minsize=300, weight=8)
+	root.rowconfigure(2, minsize=50, weight=1)
 	# set window min size
 	root.minsize(520, 40)
 	root.after(0, create_app, root)
