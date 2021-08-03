@@ -50,7 +50,6 @@ class Fedwatcher:
 
     # Email variables
     email_enabled = False
-    email = None
 
     def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml")):
         """
@@ -433,23 +432,36 @@ class Fedwatcher:
     #   Mail Function
     ###
 
-    def register_email(self, email, password):
+    def register_email(self, email, password, store=False):
         """
         When called, enables email alerts, sending from email to themself using yagmail
         Password stored using keyring and can be deleted using delete function
+        Args:
+            email: gmail account to send from and to
+            password: password for gmail, recommend using gmail 2FA with app passwords
+            store: boolean for whether to store email password in keychain (to be done later)
         """
         try:
-            self.email = email
-            # yagmail.register(email, password)  # for later, keyring storing of password
-            self.yag = yagmail.SMTP(self.email, password)
+            ## Incomplete: for storing of password
+            # if store and password is not None:
+            #     yagmail.register(email, password)
+            #     self.yag = yagmail.SMTP(email)
+            # elif store:
+            #     self.yag = yagmail.SMTP(email)
+            # elif password is not None:
+            #     self.yag = yagmail.SMTP(email, password)
+            # else:
+            #     print("Password not given")
+            #     return False
+            self.yag = yagmail.SMTP(email, password)
             self.email_enabled = True
+            print("Email enabled successfully")
             return True
         except YagInvalidEmailAddress:
             print("An invalid email address was given")
             return False
         except keyring.errors.KeyringLocked:
             print("keyring is locked, please enter keyring password")
-            self.yag = yagmail.SMTP(self.email, password)
             return False
         except SMTPAuthenticationError as e:
             print(f"Email or password is incorrect {e}")
