@@ -209,8 +209,9 @@ class App():
 		configs = [file for file in files if "config" in file]
 		if len(configs) > 0:
 			print("Adding new session to previous experiment")
+			self.rootdir = os.path.dirname(self.exp_dir)
 			# get the old experiment name from the folder structure
-			exp_name = os.path.basename(os.path.dirname(self.exp_dir))
+			exp_name = os.path.basename(self.exp_dir)
 			self.exp_entry.delete(0, tkinter.END)
 			self.exp_entry.insert(0, exp_name)
 			# Create config
