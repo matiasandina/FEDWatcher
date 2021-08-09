@@ -242,10 +242,13 @@ class App():
 
 	def check_input(self):
 		entry = self.exp_entry.get()
+		if entry == "":
+			tkinter.messagebox.showinfo("Invalid Entry", "Entry cannot be empty.")
+			return False			
 		accepted_patterns = re.compile(r'[a-zA-Z_0-9]')
 		rejected = [char for char in entry if not accepted_patterns.match(char)]
 		if len(rejected) > 0:
-			tkinter.messagebox.showinfo("Name Not Accepted", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
+			tkinter.messagebox.showinfo("Invalid Entry", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
 			return False
 		else:
 			return True
