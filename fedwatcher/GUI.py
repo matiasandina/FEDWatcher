@@ -258,7 +258,7 @@ class App():
 		# Get session number
 		self.session_n = self.make_session_n()
 		# make proper config name
-		self.configpath = os.path.join(self.exp_dir, "config_" + self.session_n + ".yaml")
+		self.configpath = os.path.join(self.exp_dir, "config_" + self.session_n + ".ini")
 
 
 		# Create config
@@ -283,7 +283,7 @@ class App():
 	def make_session_n(self):
 		'''
 		This function lists the configs in the directory and returns a proper session number as string
-		This strig gets appended to the end of the config yaml to denote sessions
+		This strig gets appended to the end of the config ini to denote sessions
 		'''
 		files = os.listdir(self.exp_dir)
 		# get config files in exp folder
