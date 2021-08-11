@@ -306,6 +306,11 @@ class App():
 		# TODO: add date of stopping the session
 		# this stops fedwatcher but doesn't close ports
 		self.fw.stop()
+		config = ConfigParser()
+		config.read(self.configpath)
+		config.set('fedwatcher', 'exp_end', datetime.datetime.now().replace(microsecond=0).isoformat())
+		with open(self.configpath, 'w') as f:
+			config.write(f)
 		print("Fedwatcher has been stopped!")
 		return
 
@@ -354,3 +359,4 @@ if __name__ == '__main__':
 	root.after(0, create_app, root)
 	root.mainloop()
 	
+
