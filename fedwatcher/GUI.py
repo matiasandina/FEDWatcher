@@ -11,6 +11,7 @@ from src.fedwatcher import Fedwatcher
 import re
 import datetime
 import webbrowser
+from PIL import ImageTk, Image
 
 class App():
 	def __init__(self, window, window_title):
@@ -27,7 +28,13 @@ class App():
 		self.left_pad = 20
 
 		# top menu
-		self.menu_top = tkinter.Frame(self.window, bg="red")
+		self.menu_top = tkinter.Frame(self.window, bg=self.bg_color)
+		image1 = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+		self.test = ImageTk.PhotoImage(image1)
+		self.logo = tkinter.Label(self.menu_top, image=self.test)
+		self.logo.image = self.test
+		# Position image
+		#self.label1.place(x=20, y=20)
 		self.app_title = tkinter.Label(self.menu_top, text = "FEDWatcher", font = ("Helvetica", 20), bg = self.bg_color, fg = self.fg_color)
 		# Middle menu left -------
 		# also explore menu bar ?
@@ -147,6 +154,7 @@ class App():
 
 		# Grid arrangements ####
 		self.menu_top.grid(row=0, column=0, sticky="w", padx=self.left_pad)
+		self.logo.pack(side="left")
 		self.app_title.pack(side="left")
 		self.menu_left.grid(row=1, column=0, sticky="nsew", padx=self.left_pad)
 		# we want to use pack here
@@ -339,16 +347,21 @@ def open_url(url):
 if __name__ == '__main__':
 	# hard-coded current directory
 	#os.chdir("/home/pi/homecage_quantification")
+	# This only works on windows
 	root = tkinter.Tk()
+	image = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+	img = ImageTk.PhotoImage(image)
+	root.tk.call('wm', 'iconphoto', root._w, img)
+	#root.iconphoto(False,img)
 	# widthxheight+300+300 pxposition from the leftcorner of the monitor
-	root.geometry("800x400+300+300")
+	root.geometry("800x450+300+300")
 	# resize columns with window
 	root.columnconfigure(0, weight=1, minsize=200)
 	root.columnconfigure(1, weight=1, minsize=200)
 	# set minimum height for row 0 and 2
-	root.rowconfigure(0, minsize=50, weight=1)
+	root.rowconfigure(0, minsize=80, weight=1)
 	root.rowconfigure(1, minsize=300, weight=8)
-	root.rowconfigure(2, minsize=50, weight=1)
+	root.rowconfigure(2, minsize=70, weight=1)
 	# set window min size
 	root.minsize(520, 40)
 	root.after(0, create_app, root)
