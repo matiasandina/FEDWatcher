@@ -27,9 +27,19 @@ class App():
 		self.button_width = 30
 		self.left_pad = 20
 
+		# find out where GUI.py is located
+		dir_path = os.path.dirname(os.path.realpath(__file__))
+		version_path = os.path.join(os.path.dirname(dir_path), "version.txt")
+
+		# TODO: version
+		#self.version = "0.0.1"
+		#self.version = "version.txt".readline()
+		with open(version_path, 'r') as f:
+			self.version = f.readline()
+
 		# top menu
 		self.menu_top = tkinter.Frame(self.window, bg=self.bg_color)
-		image1 = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+		image1 = Image.open(os.path.join(dir_path, 'img/64.png'))
 		self.test = ImageTk.PhotoImage(image1)
 		self.logo = tkinter.Label(self.menu_top, image=self.test)
 		self.logo.image = self.test
@@ -146,8 +156,9 @@ class App():
 
 		# Bottom area ----
 		self.bottom_area = tkinter.Frame(self.window)
-		self.bottom_text = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
-		self.bottom_text.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher"))
+		self.bottom_text = tkinter.Label(self.bottom_area, text = "FEDWatcher v" + self.version + " is released under MIT license.", bg=self.bg_color, fg=self.fg_color)
+		self.bottom_wiki = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
+		self.bottom_wiki.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher/wiki"))
 
 		# on closing, ask before closing
 		self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -169,6 +180,7 @@ class App():
 
 		self.bottom_area.grid(row=2, column=0, sticky='w', padx=self.left_pad)
 		self.bottom_text.pack()
+		self.bottom_wiki.pack()
 
 		# Start FEDWatcher ---
 		self.fw = Fedwatcher()
@@ -311,7 +323,6 @@ class App():
 		return new_session
 
 	def stop_experiment(self):
-		# TODO: add date of stopping the session
 		# this stops fedwatcher but doesn't close ports
 		self.fw.stop()
 		config = ConfigParser()
@@ -354,7 +365,9 @@ if __name__ == '__main__':
 	#os.chdir("/home/pi/homecage_quantification")
 	# This only works on windows
 	root = tkinter.Tk()
-	image = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+	#image = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	image = Image.open(os.path.join(dir_path, 'img/64.png'))
 	img = ImageTk.PhotoImage(image)
 	root.tk.call('wm', 'iconphoto', root._w, img)
 	#root.iconphoto(False,img)
