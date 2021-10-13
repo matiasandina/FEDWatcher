@@ -11,6 +11,7 @@ from src.fedwatcher import Fedwatcher
 import re
 import datetime
 import webbrowser
+from PIL import ImageTk, Image
 
 class App():
 	def __init__(self, window, window_title):
@@ -26,8 +27,24 @@ class App():
 		self.button_width = 30
 		self.left_pad = 20
 
+		# find out where GUI.py is located
+		dir_path = os.path.dirname(os.path.realpath(__file__))
+		version_path = os.path.join(os.path.dirname(dir_path), "version.txt")
+
+		# TODO: version
+		#self.version = "0.0.1"
+		#self.version = "version.txt".readline()
+		with open(version_path, 'r') as f:
+			self.version = f.readline()
+
 		# top menu
-		self.menu_top = tkinter.Frame(self.window, bg="red")
+		self.menu_top = tkinter.Frame(self.window, bg=self.bg_color)
+		image1 = Image.open(os.path.join(dir_path, 'img/64.png'))
+		self.test = ImageTk.PhotoImage(image1)
+		self.logo = tkinter.Label(self.menu_top, image=self.test)
+		self.logo.image = self.test
+		# Position image
+		#self.label1.place(x=20, y=20)
 		self.app_title = tkinter.Label(self.menu_top, text = "FEDWatcher", font = ("Helvetica", 20), bg = self.bg_color, fg = self.fg_color)
 		# Middle menu left -------
 		# also explore menu bar ?
@@ -139,14 +156,16 @@ class App():
 
 		# Bottom area ----
 		self.bottom_area = tkinter.Frame(self.window)
-		self.bottom_text = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
-		self.bottom_text.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher"))
+		self.bottom_text = tkinter.Label(self.bottom_area, text = "FEDWatcher v" + self.version + " is released under MIT license.", bg=self.bg_color, fg=self.fg_color)
+		self.bottom_wiki = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
+		self.bottom_wiki.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher/wiki"))
 
 		# on closing, ask before closing
 		self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 		# Grid arrangements ####
 		self.menu_top.grid(row=0, column=0, sticky="w", padx=self.left_pad)
+		self.logo.pack(side="left")
 		self.app_title.pack(side="left")
 		self.menu_left.grid(row=1, column=0, sticky="nsew", padx=self.left_pad)
 		# we want to use pack here
@@ -161,6 +180,7 @@ class App():
 
 		self.bottom_area.grid(row=2, column=0, sticky='w', padx=self.left_pad)
 		self.bottom_text.pack()
+		self.bottom_wiki.pack()
 
 		# Start FEDWatcher ---
 		self.fw = Fedwatcher()
@@ -242,10 +262,13 @@ class App():
 
 	def check_input(self):
 		entry = self.exp_entry.get()
+		if entry == "":
+			tkinter.messagebox.showinfo("Invalid Entry", "Entry cannot be empty.")
+			return False			
 		accepted_patterns = re.compile(r'[a-zA-Z_0-9]')
 		rejected = [char for char in entry if not accepted_patterns.match(char)]
 		if len(rejected) > 0:
-			tkinter.messagebox.showinfo("Name Not Accepted", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
+			tkinter.messagebox.showinfo("Invalid Entry", "Please only use alphanumeric characters in your experiment name. No spaces or symbols.")
 			return False
 		else:
 			return True
@@ -255,7 +278,7 @@ class App():
 		# Get session number
 		self.session_n = self.make_session_n()
 		# make proper config name
-		self.configpath = os.path.join(self.exp_dir, "config_" + self.session_n + ".yaml")
+		self.configpath = os.path.join(self.exp_dir, "config_" + self.session_n + ".ini")
 
 
 		# Create config
@@ -280,7 +303,7 @@ class App():
 	def make_session_n(self):
 		'''
 		This function lists the configs in the directory and returns a proper session number as string
-		This strig gets appended to the end of the config yaml to denote sessions
+		This strig gets appended to the end of the config ini to denote sessions
 		'''
 		files = os.listdir(self.exp_dir)
 		# get config files in exp folder
@@ -300,9 +323,13 @@ class App():
 		return new_session
 
 	def stop_experiment(self):
-		# TODO: add date of stopping the session
 		# this stops fedwatcher but doesn't close ports
 		self.fw.stop()
+		config = ConfigParser()
+		config.read(self.configpath)
+		config.set('fedwatcher', 'exp_end', datetime.datetime.now().replace(microsecond=0).isoformat())
+		with open(self.configpath, 'w') as f:
+			config.write(f)
 		print("Fedwatcher has been stopped!")
 		return
 
@@ -336,18 +363,26 @@ def open_url(url):
 if __name__ == '__main__':
 	# hard-coded current directory
 	#os.chdir("/home/pi/homecage_quantification")
+	# This only works on windows
 	root = tkinter.Tk()
+	#image = Image.open(os.path.join(os.getcwd(), 'img/64.png'))
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	image = Image.open(os.path.join(dir_path, 'img/64.png'))
+	img = ImageTk.PhotoImage(image)
+	root.tk.call('wm', 'iconphoto', root._w, img)
+	#root.iconphoto(False,img)
 	# widthxheight+300+300 pxposition from the leftcorner of the monitor
-	root.geometry("800x400+300+300")
+	root.geometry("800x450+300+300")
 	# resize columns with window
 	root.columnconfigure(0, weight=1, minsize=200)
 	root.columnconfigure(1, weight=1, minsize=200)
 	# set minimum height for row 0 and 2
-	root.rowconfigure(0, minsize=50, weight=1)
+	root.rowconfigure(0, minsize=80, weight=1)
 	root.rowconfigure(1, minsize=300, weight=8)
-	root.rowconfigure(2, minsize=50, weight=1)
+	root.rowconfigure(2, minsize=70, weight=1)
 	# set window min size
 	root.minsize(520, 40)
 	root.after(0, create_app, root)
 	root.mainloop()
 	
+
