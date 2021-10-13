@@ -1,6 +1,6 @@
-# Fedwatch
+# FEDWatcher
 
-Fedwatch is a program for a Raspberry Pi 4 to connect to up to 4 [FED3 feeder devices from KravitzLabDevices](https://github.com/KravitzLabDevices/FED3/). This code is written in Python and uses standard Raspberry Pi software and Python packages. This repository also contains the software serial library used on the FED3 devices.
+FEDWatcher is a program for a Raspberry Pi 4 to connect to up to 4 [FED3 feeder devices from KravitzLabDevices](https://github.com/KravitzLabDevices/FED3/). This code is written in Python and uses standard Raspberry Pi software and Python packages. This repository also contains the software serial library used on the FED3 devices.
 
 The Raspberry Pi communicates with the FED3 devices using software serial from the BNC port of the Adafruit feather into one of the four activated UART channels on the Pi.
 
@@ -43,7 +43,7 @@ dtoverlay=uart5
 
 > The first two line disables the GPIO 0 and 1 functionality to be used for uart2. If you would like to use a hat or a POE fan with the Pi at the same time, remove the first three lines.
 
-Now, you will be able to clone the Fedwatch github repository into your project and use the functions within it to run your own programs.
+Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
 ## Pinout
 
