@@ -33,11 +33,11 @@ This will take a long time. When the install is finished, the Raspberry Pi will 
 Next, you must enable the four hardware UARTs within the Raspberry Pi. Navigate to /boot/ and edit `config.txt`. At the end of the file, add on the following statements
 
 ```
-force_eeprom_read=0\
-disable_poe_fan=1\
-dtoverlay=uart2\
-dtoverlay=uart3\
-dtoverlay=uart4\
+force_eeprom_read=0
+disable_poe_fan=1
+dtoverlay=uart2
+dtoverlay=uart3
+dtoverlay=uart4
 dtoverlay=uart5
 ```
 
