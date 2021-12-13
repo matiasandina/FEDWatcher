@@ -4,6 +4,10 @@ FEDWatcher is a program for a Raspberry Pi 4 to connect to up to 4 [FED3 feeder 
 
 The Raspberry Pi communicates with the FED3 devices using software serial from the BNC port of the Adafruit feather into one of the four activated UART channels on the Pi.
 
+The GUI provides a way for the user to create projects and trigger FEDWatcher.
+
+![](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/gui.png?raw=true)
+
 ## Installation
 
 To set up the Raspberry Pi, begin with flashing a standard image of Raspbian to an SD card. The project was coded and tested using Raspbian Lite with a Gnome Desktop and Raspbian Lite Buster, but any version of Raspbian should work.
