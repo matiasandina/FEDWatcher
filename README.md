@@ -49,6 +49,9 @@ dtoverlay=uart5
 
 Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
+---
+### Hardware
+
 ## Pinout
 
 To connect the FED3 devices to the Raspberry Pi, you will need a cable that takes the BNC female from the FED3 (old version) or a 3.5 mm male jack to fit the 3.5 mm female jack (new version) and ends to interface with the Raspberry Pi (see below). 
@@ -64,3 +67,14 @@ For more information on the pinout of the Raspberry pi visit the [Official Raspb
 We are working on a friendly way to connect the output of FED3 devices (either BNC or 3.5mm Jacks) into the Raspberry Pi. Our current devices run using a prototype breakout board with this wiring.
 
 ![](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/circuit_drawing.svg)
+
+
+## Design
+We have also designed a little PCB board that sits on top of the RPi, so that it is easier for users to get started. This board was designed using KiCad 5.1 and 
+relies on the following libraries (for footprints and parts):
+- https://github.com/Tinkerforge/kicad-libraries  
+
+The designs live on the `hardware` folder in ths repository
+
+
+
