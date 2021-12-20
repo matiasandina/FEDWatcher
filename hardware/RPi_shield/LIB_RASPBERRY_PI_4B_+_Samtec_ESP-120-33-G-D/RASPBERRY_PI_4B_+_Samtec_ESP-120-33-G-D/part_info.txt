@@ -1,0 +1,9 @@
+Manufacturer=RASPBERRY-PI
+PartNumber=RASPBERRY PI 4B + Samtec ESP-120-33-G-D
+PartCategory=Connector
+PackageCategory=Other
+PinCount=40
+Version=1.10
+Released=2019-10-31 15:22:41
+Downloaded=2021-12-20 10:45:06
+3D=Y

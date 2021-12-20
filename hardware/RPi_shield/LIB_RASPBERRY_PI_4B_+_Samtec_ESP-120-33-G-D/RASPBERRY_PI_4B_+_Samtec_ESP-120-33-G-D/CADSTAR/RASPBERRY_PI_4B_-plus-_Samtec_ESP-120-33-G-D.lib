@@ -1,0 +1,18 @@
+.RASPBERRY_PI_4B_-plus-_Samtec_ESP-120-33-G-D :1 ;RASPBERRY PI 4 MODEL B with Samtec ESP-120-33-G-D connector drawn from underneath for use as a plug in module.
+RASPBERRYPI4B4GB
+*STM J
+*NGS
+*PLB 1="3V3_1" 2="5V_1" 3="BCM 2" 4="5V_2" 5="BCM 3" 6="GND_1" 7="BCM 4" 8="BCM 14" 9="GND_2" 10="BCM 15" 11="BCM 17" 12="BCM 18" 13="BCM 27" 14="GND_3" 15="BCM 22" 16="BCM 23" 17="3V3_2" 18="BCM 24" 19="BCM 10" 20="GND_4" 21="BCM 9" 22="BCM 25" 23="BCM 11" 24="BCM 8" 25="GND_5" 26="BCM 7" 27="BCM 0" 28="BCM 1" 29="BCM 5" 30="GND_6" 31="BCM 6" 32="BCM 12" 33="BCM 13" 34="GND_7" 35="BCM 19" 36="BCM 16" 37="BCM 26" 38="BCM 20" 39="GND_8" 40="BCM 21"
+*MXP 44
+*DFN RASPBERRY_PI_4B_-plus-_Samtec_ESP-120-33-G-D
+~!Manufacturer_Name (RASPBERRY-PI)
+~!Manufacturer_Part_Number (RASPBERRY PI 4B + Samtec ESP-120-33-G-D)
+~!Mouser Part Number (-)
+~!Mouser Price/Stock (-)
+~!Arrow Part Number (-)
+~!Arrow Price/Stock (-)
+~!Link Datasheet (https://www.raspberrypi.org/documentation/hardware/raspberrypi/mechanical/rpi_MECH_4b_4p0.pdf)
+~!Height (24.3mm)
+~!3D_Model (RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D)
+RASPBERRY_PI_4B_-plus-_Samtec_ESP-120-33-G-D
+1.1!P 2.1!P 3.1!U 4.1!P 5.1!U 6.1!G 7.1!U 8.1!U 9.1!G 10.1!U 11.1!U 12.1!U 13.1!U 14.1!G 15.1!U 16.1!U 17.1!P 18.1!U 19.1!U 20.1!G 21.1!U 22.1!U 23.1!U 24.1!U 25.1!G 26.1!U 27.1!U 28.1!U 29.1!U 30.1!G 31.1!U 32.1!U 33.1!U 34.1!G 35.1!U 36.1!U 37.1!U 38.1!U 39.1!G 40.1!U 

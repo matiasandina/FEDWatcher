@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "RASPBERRYPI4B4GB"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "RASPBERRYPI4B4GB")
+        (spec "default")
+    )
+)

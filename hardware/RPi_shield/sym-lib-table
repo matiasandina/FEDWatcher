@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name raspberryPi)(type Legacy)(uri /home/andre/repositories/own/FEDWatcher/hardware/RPi_shield/LIB_RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D/RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D/KiCad/RASPBERRY_PI_4B_+_Samtec_ESP-1.lib)(options "")(descr ""))
+)

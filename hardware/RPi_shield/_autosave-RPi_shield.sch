@@ -1,0 +1,366 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:GND #PWR04
+U 1 1 61BCAB95
+P 4200 1400
+F 0 "#PWR04" H 4200 1150 50  0001 C CNN
+F 1 "GND" H 4205 1227 50  0000 C CNN
+F 2 "" H 4200 1400 50  0001 C CNN
+F 3 "" H 4200 1400 50  0001 C CNN
+	1    4200 1400
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4050 1450 4200 1450
+Wire Wire Line
+	4200 1450 4200 1400
+$Comp
+L Motor:Fan M1
+U 1 1 61BD2C88
+P 8000 1950
+F 0 "M1" H 8158 2046 50  0000 L CNN
+F 1 "Fan" H 8158 1955 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 8000 1960 50  0001 C CNN
+F 3 "~" H 8000 1960 50  0001 C CNN
+	1    8000 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR08
+U 1 1 61BD3423
+P 8000 2250
+F 0 "#PWR08" H 8000 2000 50  0001 C CNN
+F 1 "GND" H 8005 2077 50  0000 C CNN
+F 2 "" H 8000 2250 50  0001 C CNN
+F 3 "" H 8000 2250 50  0001 C CNN
+	1    8000 2250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 2150 8000 2250
+$Comp
+L power:+5V #PWR07
+U 1 1 61BD3B74
+P 8000 1500
+F 0 "#PWR07" H 8000 1350 50  0001 C CNN
+F 1 "+5V" H 8015 1673 50  0000 C CNN
+F 2 "" H 8000 1500 50  0001 C CNN
+F 3 "" H 8000 1500 50  0001 C CNN
+	1    8000 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 1500 8000 1650
+Text GLabel 4150 1550 2    50   Input ~ 0
+jack1
+Wire Wire Line
+	4150 1550 4100 1550
+$Comp
+L power:GND #PWR03
+U 1 1 61BD70C6
+P 4150 2500
+F 0 "#PWR03" H 4150 2250 50  0001 C CNN
+F 1 "GND" H 4155 2327 50  0000 C CNN
+F 2 "" H 4150 2500 50  0001 C CNN
+F 3 "" H 4150 2500 50  0001 C CNN
+	1    4150 2500
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4000 2550 4150 2550
+Wire Wire Line
+	4150 2550 4150 2500
+Text GLabel 4100 2650 2    50   Input ~ 0
+jack2
+Wire Wire Line
+	4100 2650 4050 2650
+$Comp
+L power:GND #PWR02
+U 1 1 61BD7B5F
+P 4100 3450
+F 0 "#PWR02" H 4100 3200 50  0001 C CNN
+F 1 "GND" H 4105 3277 50  0000 C CNN
+F 2 "" H 4100 3450 50  0001 C CNN
+F 3 "" H 4100 3450 50  0001 C CNN
+	1    4100 3450
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3950 3500 4100 3500
+Wire Wire Line
+	4100 3500 4100 3450
+Text GLabel 4050 3600 2    50   Input ~ 0
+jack3
+Wire Wire Line
+	4050 3600 4000 3600
+$Comp
+L power:GND #PWR01
+U 1 1 61BD85BD
+P 4050 4300
+F 0 "#PWR01" H 4050 4050 50  0001 C CNN
+F 1 "GND" H 4055 4127 50  0000 C CNN
+F 2 "" H 4050 4300 50  0001 C CNN
+F 3 "" H 4050 4300 50  0001 C CNN
+	1    4050 4300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3900 4350 4050 4350
+Wire Wire Line
+	4050 4350 4050 4300
+Text GLabel 4000 4450 2    50   Input ~ 0
+jack4
+Wire Wire Line
+	4000 4450 3950 4450
+$Comp
+L raspberryPi:RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D J5
+U 1 1 61C0945B
+P 5600 4350
+F 0 "J5" H 6250 4615 50  0000 C CNN
+F 1 "RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D" H 6250 4524 50  0000 C CNN
+F 2 "raspberrypi:RASPBERRYPI4B4GB" H 6750 4450 50  0001 L CNN
+F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/mechanical/rpi_MECH_4b_4p0.pdf" H 6750 4350 50  0001 L CNN
+F 4 "RASPBERRY PI 4 MODEL B with Samtec ESP-120-33-G-D connector drawn from underneath for use as a plug in module." H 6750 4250 50  0001 L CNN "Description"
+F 5 "24.3" H 6750 4150 50  0001 L CNN "Height"
+F 6 "RASPBERRY-PI" H 6750 4050 50  0001 L CNN "Manufacturer_Name"
+F 7 "RASPBERRY PI 4B + Samtec ESP-120-33-G-D" H 6750 3950 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "" H 6750 3850 50  0001 L CNN "Mouser Part Number"
+F 9 "" H 6750 3750 50  0001 L CNN "Mouser Price/Stock"
+F 10 "" H 6750 3650 50  0001 L CNN "Arrow Part Number"
+F 11 "" H 6750 3550 50  0001 L CNN "Arrow Price/Stock"
+	1    5600 4350
+	1    0    0    -1  
+$EndComp
+Text GLabel 7000 4950 2    50   Input ~ 0
+jack1
+Wire Wire Line
+	7000 4950 6900 4950
+Text GLabel 5450 4850 0    50   Input ~ 0
+jack2
+Wire Wire Line
+	5600 4850 5450 4850
+Text GLabel 5400 5250 0    50   Input ~ 0
+jack3
+Wire Wire Line
+	5400 5250 5600 5250
+Text GLabel 5500 4650 0    50   Input ~ 0
+jack4
+Wire Wire Line
+	5500 4650 5600 4650
+$Comp
+L power:+5V #PWR010
+U 1 1 61C19DE5
+P 7000 6200
+F 0 "#PWR010" H 7000 6050 50  0001 C CNN
+F 1 "+5V" H 7015 6373 50  0000 C CNN
+F 2 "" H 7000 6200 50  0001 C CNN
+F 3 "" H 7000 6200 50  0001 C CNN
+	1    7000 6200
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6900 6150 7000 6150
+Wire Wire Line
+	7000 6150 7000 6200
+Wire Wire Line
+	7000 6200 7000 6250
+Wire Wire Line
+	7000 6250 6900 6250
+Connection ~ 7000 6200
+$Comp
+L power:GND #PWR06
+U 1 1 61C1E0DB
+P 5450 4350
+F 0 "#PWR06" H 5450 4100 50  0001 C CNN
+F 1 "GND" H 5455 4177 50  0000 C CNN
+F 2 "" H 5450 4350 50  0001 C CNN
+F 3 "" H 5450 4350 50  0001 C CNN
+	1    5450 4350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5450 4350 5600 4350
+$Comp
+L power:GND #PWR011
+U 1 1 61C1F210
+P 7050 4700
+F 0 "#PWR011" H 7050 4450 50  0001 C CNN
+F 1 "GND" H 7055 4527 50  0000 C CNN
+F 2 "" H 7050 4700 50  0001 C CNN
+F 3 "" H 7050 4700 50  0001 C CNN
+	1    7050 4700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR012
+U 1 1 61C1F7F5
+P 7050 5500
+F 0 "#PWR012" H 7050 5250 50  0001 C CNN
+F 1 "GND" H 7055 5327 50  0000 C CNN
+F 2 "" H 7050 5500 50  0001 C CNN
+F 3 "" H 7050 5500 50  0001 C CNN
+	1    7050 5500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6900 5350 7050 5350
+Wire Wire Line
+	7050 5350 7050 5500
+Wire Wire Line
+	6900 5650 7050 5650
+Wire Wire Line
+	7050 5650 7050 5500
+Connection ~ 7050 5500
+Wire Wire Line
+	7050 6050 7050 5650
+Wire Wire Line
+	6900 6050 7050 6050
+Connection ~ 7050 5650
+$Comp
+L power:GND #PWR09
+U 1 1 61C22A91
+P 5450 5050
+F 0 "#PWR09" H 5450 4800 50  0001 C CNN
+F 1 "GND" H 5455 4877 50  0000 C CNN
+F 2 "" H 5450 5050 50  0001 C CNN
+F 3 "" H 5450 5050 50  0001 C CNN
+	1    5450 5050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5450 5050 5600 5050
+Wire Wire Line
+	6900 4650 7050 4650
+Wire Wire Line
+	7050 4650 7050 4700
+Wire Wire Line
+	7050 4850 6900 4850
+Connection ~ 7050 4700
+Wire Wire Line
+	7050 4700 7050 4850
+$Comp
+L power:GND #PWR05
+U 1 1 61C25866
+P 5400 5850
+F 0 "#PWR05" H 5400 5600 50  0001 C CNN
+F 1 "GND" H 5405 5677 50  0000 C CNN
+F 2 "" H 5400 5850 50  0001 C CNN
+F 3 "" H 5400 5850 50  0001 C CNN
+	1    5400 5850
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5400 5850 5600 5850
+NoConn ~ 6900 4350
+NoConn ~ 6900 4450
+NoConn ~ 6900 4550
+NoConn ~ 6900 4750
+NoConn ~ 6900 5050
+NoConn ~ 6900 5150
+NoConn ~ 6900 5250
+NoConn ~ 6900 5450
+NoConn ~ 6900 5550
+NoConn ~ 6900 5750
+NoConn ~ 6900 5850
+NoConn ~ 6900 5950
+NoConn ~ 5600 6250
+NoConn ~ 5600 6150
+NoConn ~ 5600 6050
+NoConn ~ 5600 5950
+NoConn ~ 5600 5750
+NoConn ~ 5600 5650
+NoConn ~ 5600 5550
+NoConn ~ 5600 5450
+NoConn ~ 5600 5350
+NoConn ~ 5600 5150
+NoConn ~ 5600 4950
+NoConn ~ 5600 4750
+NoConn ~ 5600 4550
+NoConn ~ 5600 4450
+$Comp
+L Connector:AudioJack3 J4
+U 1 1 61C4B35F
+P 3700 4450
+F 0 "J4" H 3682 4775 50  0000 C CNN
+F 1 "AudioJack3" H 3682 4684 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3700 4450 50  0001 C CNN
+F 3 "~" H 3700 4450 50  0001 C CNN
+	1    3700 4450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 4450 3950 4550
+Wire Wire Line
+	3950 4550 3900 4550
+Connection ~ 3950 4450
+Wire Wire Line
+	3950 4450 3900 4450
+$Comp
+L Connector:AudioJack3 J1
+U 1 1 61C53EA3
+P 3750 3600
+F 0 "J1" H 3732 3925 50  0000 C CNN
+F 1 "AudioJack3" H 3732 3834 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3750 3600 50  0001 C CNN
+F 3 "~" H 3750 3600 50  0001 C CNN
+	1    3750 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:AudioJack3 J2
+U 1 1 61C546DE
+P 3800 2650
+F 0 "J2" H 3782 2975 50  0000 C CNN
+F 1 "AudioJack3" H 3782 2884 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3800 2650 50  0001 C CNN
+F 3 "~" H 3800 2650 50  0001 C CNN
+	1    3800 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:AudioJack3 J3
+U 1 1 61C5505F
+P 3850 1550
+F 0 "J3" H 3832 1875 50  0000 C CNN
+F 1 "AudioJack3" H 3832 1784 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3850 1550 50  0001 C CNN
+F 3 "~" H 3850 1550 50  0001 C CNN
+	1    3850 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4100 1550 4100 1650
+Wire Wire Line
+	4100 1650 4050 1650
+Connection ~ 4100 1550
+Wire Wire Line
+	4100 1550 4050 1550
+Wire Wire Line
+	4050 2650 4050 2750
+Wire Wire Line
+	4050 2750 4000 2750
+Connection ~ 4050 2650
+Wire Wire Line
+	4050 2650 4000 2650
+Wire Wire Line
+	4000 3600 4000 3700
+Wire Wire Line
+	4000 3700 3950 3700
+Connection ~ 4000 3600
+Wire Wire Line
+	4000 3600 3950 3600
+$EndSCHEMATC

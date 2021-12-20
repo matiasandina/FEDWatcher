@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "RASPBERRY_PI_4B_+_Samtec_ESP-1"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2019-12-18-16:15:28)
+    (mountForm default
+        (footprintRef "RASPBERRYPI4B4GB")
+        (spec "System")
+    )
+)

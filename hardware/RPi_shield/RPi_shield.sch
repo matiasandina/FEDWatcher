@@ -40,89 +40,6 @@ Wire Wire Line
 Wire Wire Line
 	4200 1450 4200 1400
 $Comp
-L Connector:Raspberry_Pi_2_3 J5
-U 1 1 61BCBBDC
-P 6050 2550
-F 0 "J5" H 6050 4031 50  0000 C CNN
-F 1 "Raspberry_Pi_2_3" H 6050 3940 50  0000 C CNN
-F 2 "Module:Raspberry_Pi_Zero_Socketed_THT_FaceDown_MountingHoles" H 6050 2550 50  0001 C CNN
-F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 6050 2550 50  0001 C CNN
-	1    6050 2550
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR06
-U 1 1 61BD036E
-P 6000 4000
-F 0 "#PWR06" H 6000 3750 50  0001 C CNN
-F 1 "GND" H 6005 3827 50  0000 C CNN
-F 2 "" H 6000 4000 50  0001 C CNN
-F 3 "" H 6000 4000 50  0001 C CNN
-	1    6000 4000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5650 3850 5650 3900
-Wire Wire Line
-	6350 3900 6350 3850
-Wire Wire Line
-	6250 3850 6250 3900
-Connection ~ 6250 3900
-Wire Wire Line
-	6250 3900 6350 3900
-Wire Wire Line
-	6150 3850 6150 3900
-Connection ~ 6150 3900
-Wire Wire Line
-	6150 3900 6250 3900
-Wire Wire Line
-	6050 3850 6050 3900
-Connection ~ 6050 3900
-Wire Wire Line
-	6050 3900 6150 3900
-Wire Wire Line
-	5950 3850 5950 3900
-Connection ~ 5950 3900
-Wire Wire Line
-	5950 3900 6000 3900
-Wire Wire Line
-	5850 3850 5850 3900
-Wire Wire Line
-	5650 3900 5750 3900
-Connection ~ 5850 3900
-Wire Wire Line
-	5850 3900 5950 3900
-Wire Wire Line
-	5750 3850 5750 3900
-Connection ~ 5750 3900
-Wire Wire Line
-	5750 3900 5850 3900
-Wire Wire Line
-	6000 3900 6000 4000
-Connection ~ 6000 3900
-Wire Wire Line
-	6000 3900 6050 3900
-$Comp
-L power:+5V #PWR05
-U 1 1 61BD1E7D
-P 5850 1100
-F 0 "#PWR05" H 5850 950 50  0001 C CNN
-F 1 "+5V" H 5865 1273 50  0000 C CNN
-F 2 "" H 5850 1100 50  0001 C CNN
-F 3 "" H 5850 1100 50  0001 C CNN
-	1    5850 1100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5850 1100 5850 1200
-Wire Wire Line
-	5850 1200 5950 1200
-Wire Wire Line
-	5950 1200 5950 1250
-Connection ~ 5850 1200
-Wire Wire Line
-	5850 1200 5850 1250
-$Comp
 L Motor:Fan M1
 U 1 1 61BD2C88
 P 8000 1950
@@ -253,46 +170,213 @@ Text GLabel 4000 4450 2    50   Input ~ 0
 jack4
 Wire Wire Line
 	4000 4450 3900 4450
-Text GLabel 6950 1750 2    50   Input ~ 0
+$Comp
+L raspberryPi:RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D J5
+U 1 1 61C0945B
+P 5600 4350
+F 0 "J5" H 6250 4615 50  0000 C CNN
+F 1 "RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D" H 6250 4524 50  0000 C CNN
+F 2 "RASPBERRYPI4B4GB" H 6750 4450 50  0001 L CNN
+F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/mechanical/rpi_MECH_4b_4p0.pdf" H 6750 4350 50  0001 L CNN
+F 4 "RASPBERRY PI 4 MODEL B with Samtec ESP-120-33-G-D connector drawn from underneath for use as a plug in module." H 6750 4250 50  0001 L CNN "Description"
+F 5 "24.3" H 6750 4150 50  0001 L CNN "Height"
+F 6 "RASPBERRY-PI" H 6750 4050 50  0001 L CNN "Manufacturer_Name"
+F 7 "RASPBERRY PI 4B + Samtec ESP-120-33-G-D" H 6750 3950 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "" H 6750 3850 50  0001 L CNN "Mouser Part Number"
+F 9 "" H 6750 3750 50  0001 L CNN "Mouser Price/Stock"
+F 10 "" H 6750 3650 50  0001 L CNN "Arrow Part Number"
+F 11 "" H 6750 3550 50  0001 L CNN "Arrow Price/Stock"
+	1    5600 4350
+	1    0    0    -1  
+$EndComp
+Text GLabel 7000 4950 2    50   Input ~ 0
 jack1
 Wire Wire Line
-	6850 2850 7000 2850
-Text GLabel 6950 2350 2    50   Input ~ 0
+	7000 4950 6900 4950
+Text GLabel 5450 4850 0    50   Input ~ 0
 jack2
-Text GLabel 7000 2850 2    50   Input ~ 0
+Wire Wire Line
+	5600 4850 5450 4850
+Text GLabel 5400 5250 0    50   Input ~ 0
 jack3
-Text GLabel 7000 3350 2    50   Input ~ 0
+Wire Wire Line
+	5400 5250 5600 5250
+Text GLabel 5500 4650 0    50   Input ~ 0
 jack4
 Wire Wire Line
-	6850 3350 7000 3350
+	5500 4650 5600 4650
+$Comp
+L power:+5V #PWR010
+U 1 1 61C19DE5
+P 7000 6200
+F 0 "#PWR010" H 7000 6050 50  0001 C CNN
+F 1 "+5V" H 7015 6373 50  0000 C CNN
+F 2 "" H 7000 6200 50  0001 C CNN
+F 3 "" H 7000 6200 50  0001 C CNN
+	1    7000 6200
+	0    1    1    0   
+$EndComp
 Wire Wire Line
-	6850 2350 6950 2350
+	6900 6150 7000 6150
 Wire Wire Line
-	6850 1750 6950 1750
-NoConn ~ 6150 1250
-NoConn ~ 6250 1250
-NoConn ~ 6850 1650
-NoConn ~ 6850 1950
-NoConn ~ 6850 2050
-NoConn ~ 6850 2250
-NoConn ~ 6850 2450
-NoConn ~ 6850 2650
-NoConn ~ 6850 2750
-NoConn ~ 6850 2950
-NoConn ~ 6850 3050
-NoConn ~ 6850 3250
-NoConn ~ 5250 3250
-NoConn ~ 5250 3150
-NoConn ~ 5250 3050
-NoConn ~ 5250 2950
-NoConn ~ 5250 2850
-NoConn ~ 5250 2750
-NoConn ~ 5250 2550
-NoConn ~ 5250 2450
-NoConn ~ 5250 2350
-NoConn ~ 5250 2150
-NoConn ~ 5250 2050
-NoConn ~ 5250 1950
-NoConn ~ 5250 1750
-NoConn ~ 5250 1650
+	7000 6150 7000 6200
+Wire Wire Line
+	7000 6200 7000 6250
+Wire Wire Line
+	7000 6250 6900 6250
+Connection ~ 7000 6200
+$Comp
+L power:GND #PWR06
+U 1 1 61C1E0DB
+P 5450 4350
+F 0 "#PWR06" H 5450 4100 50  0001 C CNN
+F 1 "GND" H 5455 4177 50  0000 C CNN
+F 2 "" H 5450 4350 50  0001 C CNN
+F 3 "" H 5450 4350 50  0001 C CNN
+	1    5450 4350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5450 4350 5600 4350
+$Comp
+L power:GND #PWR011
+U 1 1 61C1F210
+P 7050 4700
+F 0 "#PWR011" H 7050 4450 50  0001 C CNN
+F 1 "GND" H 7055 4527 50  0000 C CNN
+F 2 "" H 7050 4700 50  0001 C CNN
+F 3 "" H 7050 4700 50  0001 C CNN
+	1    7050 4700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR012
+U 1 1 61C1F7F5
+P 7050 5500
+F 0 "#PWR012" H 7050 5250 50  0001 C CNN
+F 1 "GND" H 7055 5327 50  0000 C CNN
+F 2 "" H 7050 5500 50  0001 C CNN
+F 3 "" H 7050 5500 50  0001 C CNN
+	1    7050 5500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6900 5350 7050 5350
+Wire Wire Line
+	7050 5350 7050 5500
+Wire Wire Line
+	6900 5650 7050 5650
+Wire Wire Line
+	7050 5650 7050 5500
+Connection ~ 7050 5500
+Wire Wire Line
+	7050 6050 7050 5650
+Wire Wire Line
+	6900 6050 7050 6050
+Connection ~ 7050 5650
+$Comp
+L power:GND #PWR09
+U 1 1 61C22A91
+P 5450 5050
+F 0 "#PWR09" H 5450 4800 50  0001 C CNN
+F 1 "GND" H 5455 4877 50  0000 C CNN
+F 2 "" H 5450 5050 50  0001 C CNN
+F 3 "" H 5450 5050 50  0001 C CNN
+	1    5450 5050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5450 5050 5600 5050
+Wire Wire Line
+	6900 4650 7050 4650
+Wire Wire Line
+	7050 4650 7050 4700
+Wire Wire Line
+	7050 4850 6900 4850
+Connection ~ 7050 4700
+Wire Wire Line
+	7050 4700 7050 4850
+$Comp
+L power:GND #PWR05
+U 1 1 61C25866
+P 5400 5850
+F 0 "#PWR05" H 5400 5600 50  0001 C CNN
+F 1 "GND" H 5405 5677 50  0000 C CNN
+F 2 "" H 5400 5850 50  0001 C CNN
+F 3 "" H 5400 5850 50  0001 C CNN
+	1    5400 5850
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5400 5850 5600 5850
+NoConn ~ 6900 4350
+NoConn ~ 6900 4450
+NoConn ~ 6900 4550
+NoConn ~ 6900 4750
+NoConn ~ 6900 5050
+NoConn ~ 6900 5150
+NoConn ~ 6900 5250
+NoConn ~ 6900 5450
+NoConn ~ 6900 5550
+NoConn ~ 6900 5750
+NoConn ~ 6900 5850
+NoConn ~ 6900 5950
+NoConn ~ 5600 6250
+NoConn ~ 5600 6150
+NoConn ~ 5600 6050
+NoConn ~ 5600 5950
+NoConn ~ 5600 5750
+NoConn ~ 5600 5650
+NoConn ~ 5600 5550
+NoConn ~ 5600 5450
+NoConn ~ 5600 5350
+NoConn ~ 5600 5150
+NoConn ~ 5600 4950
+NoConn ~ 5600 4750
+NoConn ~ 5600 4550
+NoConn ~ 5600 4450
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 61C488EE
+P 4700 1450
+F 0 "J?" H 4800 1425 50  0000 L CNN
+F 1 "Conn_Coaxial" H 4800 1334 50  0000 L CNN
+F 2 "" H 4700 1450 50  0001 C CNN
+F 3 " ~" H 4700 1450 50  0001 C CNN
+	1    4700 1450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 61C496EC
+P 4650 2550
+F 0 "J?" H 4750 2525 50  0000 L CNN
+F 1 "Conn_Coaxial" H 4750 2434 50  0000 L CNN
+F 2 "" H 4650 2550 50  0001 C CNN
+F 3 " ~" H 4650 2550 50  0001 C CNN
+	1    4650 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 61C49B88
+P 4650 3450
+F 0 "J?" H 4750 3425 50  0000 L CNN
+F 1 "Conn_Coaxial" H 4750 3334 50  0000 L CNN
+F 2 "" H 4650 3450 50  0001 C CNN
+F 3 " ~" H 4650 3450 50  0001 C CNN
+	1    4650 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 61C4A228
+P 4650 4350
+F 0 "J?" H 4750 4325 50  0000 L CNN
+F 1 "Conn_Coaxial" H 4750 4234 50  0000 L CNN
+F 2 "" H 4650 4350 50  0001 C CNN
+F 3 " ~" H 4650 4350 50  0001 C CNN
+	1    4650 4350
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
