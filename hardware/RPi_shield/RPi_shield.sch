@@ -14,17 +14,6 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Connector:AudioJack2 J4
-U 1 1 61BCA819
-P 3850 1550
-F 0 "J4" H 3882 1875 50  0000 C CNN
-F 1 "AudioJack2" H 3882 1784 50  0000 C CNN
-F 2 "" H 3850 1550 50  0001 C CNN
-F 3 "~" H 3850 1550 50  0001 C CNN
-	1    3850 1550
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR04
 U 1 1 61BCAB95
 P 4200 1400
@@ -45,7 +34,7 @@ U 1 1 61BD2C88
 P 8000 1950
 F 0 "M1" H 8158 2046 50  0000 L CNN
 F 1 "Fan" H 8158 1955 50  0000 L CNN
-F 2 "Connector_JST:JST_XH_B2B-XH-AM_1x02_P2.50mm_Vertical" H 8000 1960 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 8000 1960 50  0001 C CNN
 F 3 "~" H 8000 1960 50  0001 C CNN
 	1    8000 1950
 	1    0    0    -1  
@@ -79,18 +68,7 @@ Wire Wire Line
 Text GLabel 4150 1550 2    50   Input ~ 0
 jack1
 Wire Wire Line
-	4150 1550 4050 1550
-$Comp
-L Connector:AudioJack2 J3
-U 1 1 61BD70C0
-P 3800 2650
-F 0 "J3" H 3832 2975 50  0000 C CNN
-F 1 "AudioJack2" H 3832 2884 50  0000 C CNN
-F 2 "" H 3800 2650 50  0001 C CNN
-F 3 "~" H 3800 2650 50  0001 C CNN
-	1    3800 2650
-	1    0    0    -1  
-$EndComp
+	4150 1550 4100 1550
 $Comp
 L power:GND #PWR03
 U 1 1 61BD70C6
@@ -109,18 +87,7 @@ Wire Wire Line
 Text GLabel 4100 2650 2    50   Input ~ 0
 jack2
 Wire Wire Line
-	4100 2650 4000 2650
-$Comp
-L Connector:AudioJack2 J2
-U 1 1 61BD7B59
-P 3750 3600
-F 0 "J2" H 3782 3925 50  0000 C CNN
-F 1 "AudioJack2" H 3782 3834 50  0000 C CNN
-F 2 "" H 3750 3600 50  0001 C CNN
-F 3 "~" H 3750 3600 50  0001 C CNN
-	1    3750 3600
-	1    0    0    -1  
-$EndComp
+	4100 2650 4050 2650
 $Comp
 L power:GND #PWR02
 U 1 1 61BD7B5F
@@ -139,18 +106,7 @@ Wire Wire Line
 Text GLabel 4050 3600 2    50   Input ~ 0
 jack3
 Wire Wire Line
-	4050 3600 3950 3600
-$Comp
-L Connector:AudioJack2 J1
-U 1 1 61BD85B7
-P 3700 4450
-F 0 "J1" H 3732 4775 50  0000 C CNN
-F 1 "AudioJack2" H 3732 4684 50  0000 C CNN
-F 2 "digikey-footprints:Phone_Jack_87180-062LF" H 3700 4450 50  0001 C CNN
-F 3 "~" H 3700 4450 50  0001 C CNN
-	1    3700 4450
-	1    0    0    -1  
-$EndComp
+	4050 3600 4000 3600
 $Comp
 L power:GND #PWR01
 U 1 1 61BD85BD
@@ -169,14 +125,14 @@ Wire Wire Line
 Text GLabel 4000 4450 2    50   Input ~ 0
 jack4
 Wire Wire Line
-	4000 4450 3900 4450
+	4000 4450 3950 4450
 $Comp
 L raspberryPi:RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D J5
 U 1 1 61C0945B
 P 5600 4350
 F 0 "J5" H 6250 4615 50  0000 C CNN
 F 1 "RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D" H 6250 4524 50  0000 C CNN
-F 2 "RASPBERRYPI4B4GB" H 6750 4450 50  0001 L CNN
+F 2 "raspberrypi:RASPBERRYPI4B4GB" H 6750 4450 50  0001 L CNN
 F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/mechanical/rpi_MECH_4b_4p0.pdf" H 6750 4350 50  0001 L CNN
 F 4 "RASPBERRY PI 4 MODEL B with Samtec ESP-120-33-G-D connector drawn from underneath for use as a plug in module." H 6750 4250 50  0001 L CNN "Description"
 F 5 "24.3" H 6750 4150 50  0001 L CNN "Height"
@@ -336,47 +292,75 @@ NoConn ~ 5600 4750
 NoConn ~ 5600 4550
 NoConn ~ 5600 4450
 $Comp
-L Connector:Conn_Coaxial J?
-U 1 1 61C488EE
-P 4700 1450
-F 0 "J?" H 4800 1425 50  0000 L CNN
-F 1 "Conn_Coaxial" H 4800 1334 50  0000 L CNN
-F 2 "" H 4700 1450 50  0001 C CNN
-F 3 " ~" H 4700 1450 50  0001 C CNN
-	1    4700 1450
+L Connector:AudioJack3 J4
+U 1 1 61C4B35F
+P 3700 4450
+F 0 "J4" H 3682 4775 50  0000 C CNN
+F 1 "AudioJack3" H 3682 4684 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3700 4450 50  0001 C CNN
+F 3 "~" H 3700 4450 50  0001 C CNN
+	1    3700 4450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 4450 3950 4550
+Wire Wire Line
+	3950 4550 3900 4550
+Connection ~ 3950 4450
+Wire Wire Line
+	3950 4450 3900 4450
+$Comp
+L Connector:AudioJack3 J1
+U 1 1 61C53EA3
+P 3750 3600
+F 0 "J1" H 3732 3925 50  0000 C CNN
+F 1 "AudioJack3" H 3732 3834 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3750 3600 50  0001 C CNN
+F 3 "~" H 3750 3600 50  0001 C CNN
+	1    3750 3600
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_Coaxial J?
-U 1 1 61C496EC
-P 4650 2550
-F 0 "J?" H 4750 2525 50  0000 L CNN
-F 1 "Conn_Coaxial" H 4750 2434 50  0000 L CNN
-F 2 "" H 4650 2550 50  0001 C CNN
-F 3 " ~" H 4650 2550 50  0001 C CNN
-	1    4650 2550
+L Connector:AudioJack3 J2
+U 1 1 61C546DE
+P 3800 2650
+F 0 "J2" H 3782 2975 50  0000 C CNN
+F 1 "AudioJack3" H 3782 2884 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3800 2650 50  0001 C CNN
+F 3 "~" H 3800 2650 50  0001 C CNN
+	1    3800 2650
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_Coaxial J?
-U 1 1 61C49B88
-P 4650 3450
-F 0 "J?" H 4750 3425 50  0000 L CNN
-F 1 "Conn_Coaxial" H 4750 3334 50  0000 L CNN
-F 2 "" H 4650 3450 50  0001 C CNN
-F 3 " ~" H 4650 3450 50  0001 C CNN
-	1    4650 3450
+L Connector:AudioJack3 J3
+U 1 1 61C5505F
+P 3850 1550
+F 0 "J3" H 3832 1875 50  0000 C CNN
+F 1 "AudioJack3" H 3832 1784 50  0000 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_CUI_SJ1-3533NG_Horizontal" H 3850 1550 50  0001 C CNN
+F 3 "~" H 3850 1550 50  0001 C CNN
+	1    3850 1550
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector:Conn_Coaxial J?
-U 1 1 61C4A228
-P 4650 4350
-F 0 "J?" H 4750 4325 50  0000 L CNN
-F 1 "Conn_Coaxial" H 4750 4234 50  0000 L CNN
-F 2 "" H 4650 4350 50  0001 C CNN
-F 3 " ~" H 4650 4350 50  0001 C CNN
-	1    4650 4350
-	1    0    0    -1  
-$EndComp
+Wire Wire Line
+	4100 1550 4100 1650
+Wire Wire Line
+	4100 1650 4050 1650
+Connection ~ 4100 1550
+Wire Wire Line
+	4100 1550 4050 1550
+Wire Wire Line
+	4050 2650 4050 2750
+Wire Wire Line
+	4050 2750 4000 2750
+Connection ~ 4050 2650
+Wire Wire Line
+	4050 2650 4000 2650
+Wire Wire Line
+	4000 3600 4000 3700
+Wire Wire Line
+	4000 3700 3950 3700
+Connection ~ 4000 3600
+Wire Wire Line
+	4000 3600 3950 3600
 $EndSCHEMATC

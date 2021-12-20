@@ -358,7 +358,7 @@
     (descr "RASPBERRY PI 4B/4GB")
     (tags Connector)
     (path /61C0945B)
-    (fp_text reference J5 (at -61.440001 -1.518001) (layer F.SilkS)
+    (fp_text reference J5 (at -46.99 3.556) (layer F.SilkS)
       (effects (font (size 1.27 1.27) (thickness 0.254)))
     )
     (fp_text value RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D (at -34.13 23.23) (layer F.SilkS) hide
