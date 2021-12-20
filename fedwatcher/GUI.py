@@ -158,7 +158,7 @@ class App():
 		self.bottom_area = tkinter.Frame(self.window)
 		self.bottom_text = tkinter.Label(self.bottom_area, text = "FEDWatcher v" + self.version + " is released under MIT license.", bg=self.bg_color, fg=self.fg_color)
 		self.bottom_wiki = tkinter.Label(self.bottom_area, text="Check the Wiki", cursor="hand2")
-		self.bottom_wiki.bind("<Button-1>", lambda e: open_url("https://github.com/RedSweatshirt/FEDWatcher/wiki"))
+		self.bottom_wiki.bind("<Button-1>", lambda e: open_url("https://github.com/matiasandina/FEDWatcher/wiki"))
 
 		# on closing, ask before closing
 		self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
