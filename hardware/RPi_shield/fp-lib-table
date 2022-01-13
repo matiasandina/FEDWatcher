@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name raspberrypi)(type KiCad)(uri /home/andre/repositories/own/FEDWatcher/hardware/RPi_shield/LIB_RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D/RASPBERRY_PI_4B_+_Samtec_ESP-120-33-G-D/KiCad)(options "")(descr ""))
+  (lib (name board_logo)(type KiCad)(uri ${KIPRJMOD}/board_logo/board_logo.pretty)(options "")(descr ""))
 )

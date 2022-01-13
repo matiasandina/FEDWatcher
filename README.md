@@ -72,7 +72,7 @@ We are working on a friendly way to connect the output of FED3 devices (either B
 ## Design
 We have also designed a little PCB board that sits on top of the RPi, so that it is easier for users to get started. This board was designed using KiCad 5.1 and 
 relies on the following libraries (for footprints and parts):
-- https://github.com/Tinkerforge/kicad-libraries  
+- https://componentsearchengine.com/part-view/RASPBERRY%20PI%204B%20%2B%20Samtec%20ESP-120-33-G-D/RASPBERRY-PI
 
 The designs live on the `hardware` folder in ths repository
 
