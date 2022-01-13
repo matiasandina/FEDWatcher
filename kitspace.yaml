@@ -1,5 +1,5 @@
-bom: hardware/rpi_shield/1-click-bom.tsv
-gerbers: hardware/rpi_shield/gerbers
+bom: hardware/RPi_shield/1-click-bom.tsv
+gerbers: hardware/RPi_shield/gerbers
 summary: A raspberry pi shield and software to communicate with FED devices
 site: https://github.com/matiasandina/FEDWatcher
 
