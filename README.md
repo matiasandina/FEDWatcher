@@ -1,11 +1,14 @@
 # FEDWatcher
 
-FEDWatcher is sofware to connect to up to 4 [FED3 feeder devices](https://github.com/KravitzLabDevices/FED3/) to one Raspberry Pi 4. This code is written in Python and uses standard Raspberry Pi software and Python packages. This repository also contains the software serial library used on the FED3 devices.
-This repository also contains files to print the PCB we are using as a Raspberry Pi HAT for easier interface with the Raspberry Pi 4 pinout. 
+FEDWatcher is sofware to connect up to 4 [FED3 feeder devices](https://github.com/KravitzLabDevices/FED3/) to one Raspberry Pi 4. 
+The Raspberry Pi communicates with the FED3 devices using software serial from the BNC/headphone jack port of the Adafruit feather into the activated UART channels on the Pi.
 
-The Raspberry Pi communicates with the FED3 devices using software serial from the BNC/headphone jack port of the Adafruit feather into one of the four activated UART channels on the Pi.
+This repository contains:
 
-FEDWatcher GUI provides a way for the user to create projects and trigger FEDWatcher.
+* Python code that uses standard Raspberry Pi software and Python packages. 
+* The modified software serial library used on the FED3 devices. See [softwareSerial](https://github.com/matiasandina/FEDWatcher/tree/main/softwareSerial).
+* Files to print the PCB we are using as a Raspberry Pi HAT for easier interface with the Raspberry Pi 4 pinout. 
+* Python code for FEDWatcher GUI, which provides a way for the user to create projects and trigger FEDWatcher easily (see pic below).
 
 ![](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/gui.png?raw=true)
 
@@ -57,14 +60,41 @@ dtoverlay=uart5
 Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
 ---
-### Hardware
+## Hardware
 
-## Pinout
+### Arduino side
+
+On the Arduino side of things, you should have a few modifications to your sketch
+
+Use
+
+```
+#include "FED3.h"
+```
+This will make use of a local `FED3.h` file, instead of the installed FED3 library. We are currently trying to work out a way to merge FEDWatcher into the common FED3 library but for the time being you will need to use a local file.
+
+
+Use `setSerial(true)` to enable FEDWatcher.
+
+```
+void setup() {
+  fed3.begin();                                         //Setup the FED3 hardware
+  fed3.DisplayPokes = false;                            //Customize the DisplayPokes option to 'false' to not display the poke indicators
+  fed3.timeout = 3; //Set a timeout period (in seconds) after each pellet is taken
+  
+  // Turn to true if you are using FEDWatcher
+  fed3.setSerial(true);
+}
+```
+
+You can check the `sampleSketch` folder which has a free feeding example with 3 second inter trial interval (time between pellets).
+
+
+### Pinout
 
 To connect the FED3 devices to the Raspberry Pi, you will need a cable that takes the BNC female from the FED3 (old version) or a 3.5 mm male jack to fit the 3.5 mm female jack (new version) and ends to interface with the Raspberry Pi (see below). 
 
-We have made custom cable using awg22 cable, BNC adapters, and male 3.5 mm jacks. If you are using the newer version of the FED3, any commercial stereo cable will work just fine.
-
+We have made custom cable using awg22 cable, BNC adapters, and male 3.5 mm jacks (see links below). If you are using the newer version of the FED3, any commercial stereo cable will work just fine.
 
 For this program, up to four FED3 devices can be hooked up to a single Raspberry Pi. There are four activated UART ports with receivers at GPIO pins 1, 5, 9, and 13, corresponding to port1, port2, port3, port 4, in order. The unused send pins are located at 0, 4, 8, and 12. **These pins cannot be used while this program is running**. However, if not all ports are used, they can be disabled in the setup function. 
 
@@ -74,14 +104,14 @@ For more information on the pinout of the Raspberry pi visit the [Official Raspb
 
 ![image](https://user-images.githubusercontent.com/7494967/124830013-53691600-df47-11eb-8e53-1c78fbac09ee.png)
 
-## Design of FEDWatcher HAT
+### Design of FEDWatcher HAT
 
 We have also designed a little PCB board that sits on top of the RPi, so that it is easier for users to get started. This board was designed using KiCad 5.1 and 
 relies on the following libraries (for footprints and parts):
 - https://componentsearchengine.com/part-view/RASPBERRY%20PI%204B%20%2B%20Samtec%20ESP-120-33-G-D/RASPBERRY-PI
 
 
-There's a bit of soldering involved:
+There's a bit of soldering involved, but it makes things cleaner:
 
 * Solder female pins to PCB to match Raspberry Pi's pinout.
 * Solder female headphone jacks to PCB
@@ -89,17 +119,15 @@ There's a bit of soldering involved:
 
 These is how it looks like in our lab.
 
-![]() 
-![]()
+![fedwatcher-top](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/fedwatcher-top.jpg?raw=true) 
+![fedwatcher-side](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/fedwatcher-side.jpg?raw=true)
 
 The designs live on the [hardware](https://github.com/matiasandina/FEDWatcher/tree/main/hardware/RPi_shield) folder in this repository, where you can also find the bill of materials for the HAT.
-There are a few generic parts that we recommend using 
+There are a few generic parts that we recommend using, but similar parts should work.
 
-|Part   	|Link   	|
-|---	|---	|---	|
-|Heat Sink and Fan   	|[Amazon](https://www.amazon.com/GeeekPi-Raspberry-Cooling-Aluminum-Heatsink/dp/B07PCMTZHF/ref=sr_1_3?crid=Q8C55QA09LS2&keywords=raspberry+pi+fan+aluminum+heatsink&qid=1659374343&sprefix=raspberry+pi+fan+aluminum+heatsink%2Caps%2C65&sr=8-3)   	|
-|BNC adapter   	|[Amazon](https://www.amazon.com/Connector-Coaxial-Terminal-Adpater-Surveillance/dp/B091Z1V55J/ref=sr_1_22_sspa?crid=16I3NQ8L51GTH&keywords=bnc+adapter+wire&qid=1659374513&sprefix=bnc+adapters+wire,aps,61&sr=8-22-spons&psc=1)   	|
-|M2.5 brass standoff   	|[Amazon](https://www.amazon.com/HanTof-Raspberry-Standoffs-Standoff-Cylinder/dp/B07KM27KC6/ref=pd_sbs_5/136-6686908-1264224?pd_rd_w=xld4t&pf_rd_p=0f56f70f-21e6-4d11-bb4a-bcdb928a3c5a&pf_rd_r=T61GBPY4VQAJ1AG9K1SB&pd_rd_r=d5b09aac-2d40-4798-8f3f-64e0f1895e47&pd_rd_wg=2Fxwf&pd_rd_i=B07KM27KC6&psc=1)   	|
+* [Heat Sink and Fan](https://www.amazon.com/GeeekPi-Raspberry-Cooling-Aluminum-Heatsink/dp/B07PCMTZHF/ref=sr_1_3?crid=Q8C55QA09LS2&keywords=raspberry+pi+fan+aluminum+heatsink&qid=1659374343&sprefix=raspberry+pi+fan+aluminum+heatsink%2Caps%2C65&sr=8-3)
+* [BNC adapter](https://www.amazon.com/Connector-Coaxial-Terminal-Adpater-Surveillance/dp/B091Z1V55J/ref=sr_1_22_sspa?crid=16I3NQ8L51GTH&keywords=bnc+adapter+wire&qid=1659374513&sprefix=bnc+adapters+wire,aps,61&sr=8-22-spons&psc=1)
+* [M2.5 brass standoff](https://www.amazon.com/HanTof-Raspberry-Standoffs-Standoff-Cylinder/dp/B07KM27KC6/ref=pd_sbs_5/136-6686908-1264224?pd_rd_w=xld4t&pf_rd_p=0f56f70f-21e6-4d11-bb4a-bcdb928a3c5a&pf_rd_r=T61GBPY4VQAJ1AG9K1SB&pd_rd_r=d5b09aac-2d40-4798-8f3f-64e0f1895e47&pd_rd_wg=2Fxwf&pd_rd_i=B07KM27KC6&psc=1)   	|
 
 
 ## Contribute
