@@ -110,6 +110,10 @@ We have also designed a little PCB board that sits on top of the RPi, so that it
 relies on the following libraries (for footprints and parts):
 - https://componentsearchengine.com/part-view/RASPBERRY%20PI%204B%20%2B%20Samtec%20ESP-120-33-G-D/RASPBERRY-PI
 
+Here's how the PCB looks like
+
+![FEDWatcher PCB](https://github.com/matiasandina/FEDWatcher/blob/main/hardware/RPi_shield/RPi_shield.png?raw=true)
+
 
 There's a bit of soldering involved, but it makes things cleaner:
 
@@ -127,7 +131,7 @@ There are a few generic parts that we recommend using, but similar parts should 
 
 * [Heat Sink and Fan](https://www.amazon.com/GeeekPi-Raspberry-Cooling-Aluminum-Heatsink/dp/B07PCMTZHF/ref=sr_1_3?crid=Q8C55QA09LS2&keywords=raspberry+pi+fan+aluminum+heatsink&qid=1659374343&sprefix=raspberry+pi+fan+aluminum+heatsink%2Caps%2C65&sr=8-3)
 * [BNC adapter](https://www.amazon.com/Connector-Coaxial-Terminal-Adpater-Surveillance/dp/B091Z1V55J/ref=sr_1_22_sspa?crid=16I3NQ8L51GTH&keywords=bnc+adapter+wire&qid=1659374513&sprefix=bnc+adapters+wire,aps,61&sr=8-22-spons&psc=1)
-* [M2.5 brass standoff](https://www.amazon.com/HanTof-Raspberry-Standoffs-Standoff-Cylinder/dp/B07KM27KC6/ref=pd_sbs_5/136-6686908-1264224?pd_rd_w=xld4t&pf_rd_p=0f56f70f-21e6-4d11-bb4a-bcdb928a3c5a&pf_rd_r=T61GBPY4VQAJ1AG9K1SB&pd_rd_r=d5b09aac-2d40-4798-8f3f-64e0f1895e47&pd_rd_wg=2Fxwf&pd_rd_i=B07KM27KC6&psc=1)   	|
+* [M2.5 brass standoff](https://www.amazon.com/HanTof-Raspberry-Standoffs-Standoff-Cylinder/dp/B07KM27KC6/ref=pd_sbs_5/136-6686908-1264224?pd_rd_w=xld4t&pf_rd_p=0f56f70f-21e6-4d11-bb4a-bcdb928a3c5a&pf_rd_r=T61GBPY4VQAJ1AG9K1SB&pd_rd_r=d5b09aac-2d40-4798-8f3f-64e0f1895e47&pd_rd_wg=2Fxwf&pd_rd_i=B07KM27KC6&psc=1)
 
 
 ## Contribute
