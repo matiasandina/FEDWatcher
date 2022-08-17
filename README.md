@@ -71,6 +71,14 @@ source fedwatcher/bin/activate
 pip3 install -r requirements.txt --extra-index-url https://www.piwheels.org/simple
 ```
 
+To launch the GUI.
+
+```
+cd FEDWatcher/
+source fedwatcher/bin/activate
+python3 fedwatcher/GUI.py
+```
+
 ---
 ## Hardware
 
