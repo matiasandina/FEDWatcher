@@ -59,8 +59,22 @@ dtoverlay=uart5
 
 Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
+## fedwatcher python
+
+To install the software itself, you are advised to use a virtual environment. Clone the repository and then install package requirements in the virtual environment. Installation in Raspberry Pi takes a long time, use the piwheel link in `pip3 install` to make it faster. 
+
+```
+git clone https://github.com/matiasandina/FEDWatcher.git
+cd FEDWatcher
+python3 -m venv fedwatcher 
+source fedwatcher/bin/activate
+pip3 install -r requirements.txt --extra-index-url https://www.piwheels.org/simple
+```
+
 ---
 ## Hardware
+
+FED3 needs `.ino` sketches to be flashed into it. There are a few things that are crucial for fedwatcher to work properly in FED3 devices.
 
 ### Arduino side
 
