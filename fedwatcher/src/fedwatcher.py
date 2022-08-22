@@ -365,7 +365,7 @@ class Fedwatcher:
         today = datetime.date.today()
         timestr = f"{today.month:02d}" + f"{today.day:02d}" + str(today.year%100)
         #filename = f"FED{df_data[0]["Device_Number"]:03d}_" +  timestr + f"_{self.session_num:02d}.csv"
-        filename = f"FED{df_data[0]['Device_Number']:03d}_{timestr}_{self.session_num:02d}.csv"
+        filename = f"FED{int(df_data[0]['Device_Number']):03d}_{timestr}_{self.session_num:02d}.csv"
 
         path = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
