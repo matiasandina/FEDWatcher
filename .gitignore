@@ -1,0 +1,6 @@
+fedwatcher/bin/
+fedwatcher/lib/
+fedwatcher/pyvenv.cfg
+fedwatcher/share/
+*.pyc
+__pycache__/
