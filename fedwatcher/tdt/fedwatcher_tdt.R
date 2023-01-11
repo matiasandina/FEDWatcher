@@ -9,10 +9,13 @@
 #' #' \itemize{
 #'   \item event - The number of event.
 #'   \item seconds - The first recorded timestamp of the event.
-#'   \item tdt_datetime - If `trial_start` is `POSIXct`, a `POSIXct` timestamp will be calculated using the `seconds` coulmn.
+#'   \item tdt_datetime - If `trial_start` is `POSIXct`, a `POSIXct` timestamp will be calculated using the `seconds` column.
 #' }
 #' 
 fedwatcher_tdt <- function(event_onset, trial_start=NULL){
+  if(identical(event_onset, list())){
+    stop("event_onset is an empty `list`, fedwatcher_tdt() cannot calculate if no events were provided")
+  }
   # we believe two real events can't be 0.01 seconds apart
   event_threshold <- 0.01
   # diff will remove the first event, so we add it
