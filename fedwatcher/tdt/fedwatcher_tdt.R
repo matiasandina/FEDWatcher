@@ -45,16 +45,18 @@ fedwatcher_tdt <- function(event_onset, trial_start=NULL){
 
 bind_fed_events <- function(FED_data, exp_start, exp_stop, fed3_event_onset){
   
-  recorded_events <- FED_data %>% filter(data.table::between(datetime, exp_start, exp_stop)) %>% nrow()
+  recorded_events <- nrow(filter(FED_data, data.table::between(datetime, exp_start, exp_stop)))
   
   tdt_events <- tryCatch(
     expr = {
-        nrow(fedwatcher_tdt(fed3_event_onset, exp_start))
+        fedwatcher_tdt(fed3_event_onset, exp_start)
         #message("Trials found")
     },
     error = function(e){
         message('Error found')
         print(e)
+        # give empty data frame so we can call nrow()
+        data.frame()
     },
     warning = function(w){
         message('Caught a warning!')
@@ -67,7 +69,7 @@ bind_fed_events <- function(FED_data, exp_start, exp_stop, fed3_event_onset){
 
   if (!assertthat::are_equal(
     x = recorded_events,
-    y = length(tdt_events)
+    y = nrow(tdt_events)
   )){
     usethis::ui_info("tdt_events {length(tdt_events)} and FED_data {nrow(recorded_events)} filtered during trial do not have the same number of events, using FED_data only")
     usethis::ui_info("Check the input and/or use `match_datetimes()`")
