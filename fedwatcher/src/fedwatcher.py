@@ -51,7 +51,10 @@ class Fedwatcher:
     # Email variables
     email_enabled = False
 
-    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml")):
+    def __init__(self, baud=57600, timeout=1, 
+        portpaths = ("/dev/serial0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), 
+        configpath = os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml"), 
+        tg_enabled = False):
         """
         Constructor
         Creates a new Fedwatch object with baud, timeout, and portpaths
@@ -64,6 +67,7 @@ class Fedwatcher:
         self.baud = baud
         self.timeout = timeout
         self.portpaths = portpaths
+        self.tg_enabled = tg_enabled
         self.manager = mp.Manager()
         self.port_locks = self.manager.list()
         self.last_save = time.time()
@@ -144,6 +148,9 @@ class Fedwatcher:
                 print("Email sent")
             except Exception as e: # catch all exception, otherwise FEDWatcher will halt and stop monitoring
                 print(f"Error occurred in sending email {e}")
+        if self.tg_enabled:
+            print("Telegram Enabled")
+
 
     def readPort(self, port, f=None, multi=False, verbose=False, lockInd=None):
         """
@@ -370,7 +377,7 @@ class Fedwatcher:
         path = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
         if not os.path.exists(path):
             os.makedirs(path)
-        path = os.path.join(path, filename)
+        path =  os.path.join(path, filename)
         if not os.path.isfile(path):
             df.to_csv(path_or_buf=path, mode='a', index=False)
         else:   

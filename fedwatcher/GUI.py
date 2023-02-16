@@ -68,6 +68,10 @@ class App():
 		 text="Password:", pady=5, bg=self.bg_color, width=10)
 		self.password_entry = tkinter.Entry(self.menu_left_upper, show="*", width=20)
 
+		self.telegram_var = tkinter.BooleanVar()
+		self.telegram_checkbox = tkinter.Checkbutton(self.menu_left_upper, text="Activate Telegram Bot", variable=self.telegram_var)
+		self.telegram_checkbox.pack()
+
 
 		# Checkbox for remembering
 		#self.remember = tkinter.IntVar(value = 0)
@@ -183,7 +187,7 @@ class App():
 		self.bottom_wiki.pack()
 
 		# Start FEDWatcher ---
-		self.fw = Fedwatcher()
+		self.fw = Fedwatcher(self.telegram_var)
 
 
 	def get_mac(self):
