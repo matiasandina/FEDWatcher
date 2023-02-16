@@ -51,7 +51,7 @@ class Fedwatcher:
     # Email variables
     email_enabled = False
 
-    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml")):
+    def __init__(self, baud=57600, timeout=1, portpaths=("/dev/ttyAMA0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), configpath=os.path.expanduser("~/FEDWatcher/fedwatcher/config.yaml")):
         """
         Constructor
         Creates a new Fedwatch object with baud, timeout, and portpaths
