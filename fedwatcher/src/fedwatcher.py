@@ -11,6 +11,9 @@ import yagmail
 from yagmail.error import YagInvalidEmailAddress
 import keyring
 from smtplib import SMTPServerDisconnected, SMTPAuthenticationError
+import tkinter as tk
+import tkinter.filedialog
+import requests
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -50,6 +53,10 @@ class Fedwatcher:
 
     # Email variables
     email_enabled = False
+
+    # Notification variables
+    last_notif = None
+    notif_interval = 6 # in hours
 
     def __init__(self, baud=57600, timeout=1, 
         portpaths = ("/dev/serial0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), 
@@ -149,7 +156,8 @@ class Fedwatcher:
             except Exception as e: # catch all exception, otherwise FEDWatcher will halt and stop monitoring
                 print(f"Error occurred in sending email {e}")
         if self.tg_enabled:
-            print("Telegram Enabled")
+            self.send_tg_message(message = f"jam detected on fed {fedNumber}")
+            
 
 
     def readPort(self, port, f=None, multi=False, verbose=False, lockInd=None):
@@ -224,6 +232,12 @@ class Fedwatcher:
                 self._save_all_df()
                 self.last_save = now
 
+            # TODO: replicate this idea but with the notification interval
+            if (now - self.last_notif * 3600) > self.notif_interval:
+                summary = self.event_summary()
+                if self.tg_enabled:
+                    self.send_tg_message(message=summary)
+
             time.sleep(0.0009)  # loop without reading a port takes about 0.0001, total time ~1ms per loop
 
     def run(self, f=None, multi=False, verbose=True, configpath=None):
@@ -251,6 +265,7 @@ class Fedwatcher:
                 port.open()
 
         self.last_save = time.time()
+        self.last_notif = time.time()
         self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
         self.run_process.start()
         print("FEDWatcher started :)")
@@ -434,6 +449,37 @@ class Fedwatcher:
             return self._new_df()
         else:
             return self._new_df(self.df_dict[Device_Number])
+
+    ###
+    #   Telegram Function
+    ###
+    def find_telegram_keys(self):
+            root = tk.Tk()
+            root.withdraw()
+            file_path = tkinter.filedialog.askopenfilename(title="Choose YAML with Telegram Credentials", filetypes=(("YAML", "*.yaml"),
+                                       ("All files", "*.*") ))
+            config = configparser.ConfigParser()
+            config.read(file_path)
+            self.bot_token = config.get("telegram", "bot_token")
+            self.chat_id = config.get("telegram", "chat_id")
+            #print(f"Will use bot {self.bot_token} to message {self.chat_id}")
+            self.telegram_enabled = True
+            self.send_tg_message(message = f"FEDWatcher Started {datetime.datetime.now().isoformat()}")
+            self.send_tg_message(message = f"Notification frequency set to {self.notif_interval} hours")
+            return
+
+    def send_tg_message (self, message):
+        # Telegram send message URL
+        sendURL = 'https://api.telegram.org/bot' + self.bot_token + '/sendMessage'
+        response = requests.post(sendURL + "?chat_id=" + str(self.chat_id) + "&text=" + message)
+        # Close to avoid filling up the RAM.
+        response.close()
+
+    ###
+    #   Summary Functions
+    ###
+    def event_summary():
+        return
 
     ###
     #   Mail Function

@@ -70,7 +70,6 @@ class App():
 
 		self.telegram_var = tkinter.BooleanVar()
 		self.telegram_checkbox = tkinter.Checkbutton(self.menu_left_upper, text="Activate Telegram Bot", variable=self.telegram_var)
-		self.telegram_checkbox.pack()
 
 
 		# Checkbox for remembering
@@ -95,6 +94,7 @@ class App():
 		self.email_entry.grid(row=2,column=1, sticky='ew',padx=1)
 		self.password_entry.grid(row=3,column=1, sticky='ew',padx=1)
 		# checkbox
+		self.telegram_checkbox.grid(row=4, column=1, sticky='ne', padx=1)
 		#self.delete_check.grid(row=4, column=1, sticky='ne', padx=1)
 		#self.remember_check.grid(row=5, column=1, sticky='ne', padx=1)
 
@@ -187,7 +187,7 @@ class App():
 		self.bottom_wiki.pack()
 
 		# Start FEDWatcher ---
-		self.fw = Fedwatcher(self.telegram_var)
+		self.fw = Fedwatcher()
 
 
 	def get_mac(self):
@@ -253,12 +253,13 @@ class App():
 			if len(self.email_entry.get()) > 0:
 				email_ok = self.fw.register_email(email=self.email_entry.get(), password=self.password_entry.get())
 				# run fedwatcher
-				print("Running FEDWatcher with notifications to " + self.email_entry.get())
-				self.fw.run(configpath=self.configpath)
-			else:
-				# run fedwatcher with no email
-				print("Running FEDWatcher")
-				self.fw.run(configpath=self.configpath)
+				print("FEDWatcher will run with notifications to " + self.email_entry.get())
+			if self.telegram_var:
+				tg_ok = self.fw.find_telegram_keys()
+				print("FEDWatcher will run with notifications. Check your Telegram!")
+			
+			print("Starting FEDWatcher")
+			self.fw.run(configpath=self.configpath)
 		else:
 			tkinter.messagebox.showinfo("Something went wrong",
 			 "This will never happen (?)")
