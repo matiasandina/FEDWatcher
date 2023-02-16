@@ -463,7 +463,7 @@ class Fedwatcher:
             self.bot_token = config.get("telegram", "bot_token")
             self.chat_id = config.get("telegram", "chat_id")
             #print(f"Will use bot {self.bot_token} to message {self.chat_id}")
-            self.telegram_enabled = True
+            self.tg_enabled = True
             self.send_tg_message(message = f"FEDWatcher Started {datetime.datetime.now().isoformat()}")
             self.send_tg_message(message = f"Notification frequency set to {self.notif_interval} hours")
             return
