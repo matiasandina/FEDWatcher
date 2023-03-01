@@ -12,6 +12,7 @@ import re
 import datetime
 import webbrowser
 from PIL import ImageTk, Image
+import time
 
 class App():
 	def __init__(self, window, window_title):
@@ -211,7 +212,7 @@ class App():
 		self.all_set = self.check_input()
 		if self.all_set:
 			# choose directories first
-			self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory")
+			self.rootdir = tkinter.filedialog.askdirectory(title="Choose Project Directory", initialdir = os.path.expanduser('~'))
 			self.exp_dir = os.path.join(self.rootdir, self.exp_entry.get())
 			# create directory if needed
 			if not os.path.isdir(self.exp_dir):
@@ -225,7 +226,7 @@ class App():
 
 	def load_config(self):
 		# choose directories first
-		self.exp_dir = tkinter.filedialog.askdirectory(title="Choose Previous Experiment Directory")
+		self.exp_dir = tkinter.filedialog.askdirectory(title="Choose Previous Experiment Directory", initialdir = os.path.expanduser('~'))
 		#self.expdir = os.path.join(self.rootdir, self.exp_entry.get())
 		# check for previous configs
 		files = os.listdir(self.exp_dir)
@@ -254,7 +255,8 @@ class App():
 				email_ok = self.fw.register_email(email=self.email_entry.get(), password=self.password_entry.get())
 				# run fedwatcher
 				print("FEDWatcher will run with notifications to " + self.email_entry.get())
-			if self.telegram_var:
+			if self.telegram_var.get():
+				self.fw.tg_enabled = True
 				tg_ok = self.fw.find_telegram_keys()
 				print("FEDWatcher will run with notifications. Check your Telegram!")
 			
@@ -355,7 +357,9 @@ class App():
 			# 	print("Erasing email information")
 			# 	self.fw.delete_email()
 			# this first stops fedwatcher, fedwatcher will handle data saving
-			self.fw.close()
+			self.fw.stop()
+			time.sleep(0.5)
+			self.fw.exit_gracefully()
 			self.window.destroy()
 
 def create_app(root):

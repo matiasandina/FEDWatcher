@@ -48,6 +48,7 @@ class Fedwatcher:
     last_save = None
     configpath = "../config.yaml"
     exp_dir = "Documents"
+    today_dir = ''
     exp_name = "Fedwatcher"
     session_num = 0
 
@@ -56,6 +57,7 @@ class Fedwatcher:
 
     # Notification variables
     last_notif = None
+    # TODO: give user control using GUI.py
     notif_interval = 6 # in hours
 
     def __init__(self, baud=57600, timeout=1, 
@@ -171,7 +173,7 @@ class Fedwatcher:
         if multi:
           self.main_thread = False
         line = port.readline()
-        now = datetime.datetime.now().isoformat()
+        self.now_dt = datetime.datetime.now().isoformat()
         if lockInd is not None:
            self.port_locks[lockInd] = False
         line = str(line)[2:-5]
@@ -181,7 +183,7 @@ class Fedwatcher:
         if line[-3:] == "jam":
             self.sendAlert(line[:-4])
             return
-        ret = self._format_line_dict(line, now)
+        ret = self._format_line_dict(line, self.now_dt)
 
         # Save to dataframe
         if multi:
@@ -233,10 +235,31 @@ class Fedwatcher:
                 self.last_save = now
 
             # TODO: replicate this idea but with the notification interval
-            if (now - self.last_notif * 3600) > self.notif_interval:
-                summary = self.event_summary()
-                if self.tg_enabled:
-                    self.send_tg_message(message=summary)
+            self.now_dt = datetime.datetime.now()
+            if (self.now_dt - self.last_notif).total_seconds() > self.notif_interval * 3600:
+                self._save_all_df()
+                self.last_save = now
+                # it might be that the folder doesn't exist yet because no data has been saved
+                if os.path.exists(self.today_dir):
+                    csv_files = [file for file in os.listdir(self.today_dir) if file.endswith('.csv')]
+                    #print(csv_files)
+                    for fn in csv_files:
+                        #print(f"summary for {fn}")
+                        summary = self.event_summary(fn)
+                        if self.tg_enabled:
+                            self.send_tg_message(message=summary)
+                        else:
+                            print(summary)
+                else:
+                    summary = f"No events saved before {self.now_dt.isoformat()}"
+                    if self.tg_enabled:
+                        self.send_tg_message(message=summary)
+                    else:
+                        print(summary)
+                    
+                # reset last notif
+                self.last_notif = self.now_dt
+                
 
             time.sleep(0.0009)  # loop without reading a port takes about 0.0001, total time ~1ms per loop
 
@@ -265,7 +288,8 @@ class Fedwatcher:
                 port.open()
 
         self.last_save = time.time()
-        self.last_notif = time.time()
+        self.last_notif = datetime.datetime.now()
+        self.now_dt = datetime.datetime.now()
         self.run_process = mp.Process(target=self.runHelper, args=(f, multi, verbose))
         self.run_process.start()
         print("FEDWatcher started :)")
@@ -288,8 +312,7 @@ class Fedwatcher:
         if self.running:
             self.stop()
         self.ready = False
-        for port in self.ports:
-            port.close()
+        self.close_ports()
 
 
     def close_ports(self):
@@ -389,10 +412,10 @@ class Fedwatcher:
         #filename = f"FED{df_data[0]["Device_Number"]:03d}_" +  timestr + f"_{self.session_num:02d}.csv"
         filename = f"FED{int(df_data[0]['Device_Number']):03d}_{timestr}_{self.session_num:02d}.csv"
 
-        path = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
-        if not os.path.exists(path):
-            os.makedirs(path)
-        path =  os.path.join(path, filename)
+        self.today_dir = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
+        if not os.path.exists(self.today_dir):
+            os.makedirs(self.today_dir)
+        path =  os.path.join(self.today_dir, filename)
         if not os.path.isfile(path):
             df.to_csv(path_or_buf=path, mode='a', index=False)
         else:   
@@ -454,16 +477,18 @@ class Fedwatcher:
     #   Telegram Function
     ###
     def find_telegram_keys(self):
+        if self.tg_enabled:
             root = tk.Tk()
             root.withdraw()
-            file_path = tkinter.filedialog.askopenfilename(title="Choose YAML with Telegram Credentials", filetypes=(("YAML", "*.yaml"),
-                                       ("All files", "*.*") ))
+            file_path = tkinter.filedialog.askopenfilename(title="Choose YAML with Telegram Credentials",
+                                                           initialdir = os.path.expanduser('~'),
+                                                           filetypes=(("YAML", "*.yaml"), ("All files", "*.*"))
+                                                           )
             config = configparser.ConfigParser()
             config.read(file_path)
             self.bot_token = config.get("telegram", "bot_token")
             self.chat_id = config.get("telegram", "chat_id")
             #print(f"Will use bot {self.bot_token} to message {self.chat_id}")
-            self.tg_enabled = True
             self.send_tg_message(message = f"FEDWatcher Started {datetime.datetime.now().isoformat()}")
             self.send_tg_message(message = f"Notification frequency set to {self.notif_interval} hours")
             return
@@ -478,8 +503,27 @@ class Fedwatcher:
     ###
     #   Summary Functions
     ###
-    def event_summary():
-        return
+    def event_summary(self, filename):
+        ## want to return message in format "FED{Device #} delivered {num_rows} pellets since {Time}"
+        # INPUTS: data, last time interval
+        # OUTPUTS: a summarized message in string form
+
+        # iterate through dataframe
+        path = os.path.join(self.today_dir, filename)
+        df = pd.read_csv(path)
+        # make the column datetime
+        df["Pi_Time"] = pd.to_datetime(df["Pi_Time"])
+        device_number = filename.split("_")[0]
+        # get the session number.csv
+        session_number = filename.split("_")[-1]
+        # remove the csv
+        session_number = session_number.replace(".csv", "")
+        # filter through events using PiTime
+        filtered_df = df.loc[(df['Pi_Time'] > self.last_notif) & (df['Pi_Time'] < self.now_dt) & (df['Event']=="Pellet")]
+        # pellets = number of rows in df after filtering
+        num_pellets = len(filtered_df.index) # will this work with empty df?
+        return f"{device_number} session {session_number} delivered {num_pellets} pelets since {self.last_notif.isoformat()}"
+
 
     ###
     #   Mail Function
