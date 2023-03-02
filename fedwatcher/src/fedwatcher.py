@@ -58,7 +58,7 @@ class Fedwatcher:
     # Notification variables
     last_notif = None
     # TODO: give user control using GUI.py
-    notif_interval = 6 # in hours
+    notif_interval = 0.01 # in hours
 
     def __init__(self, baud=57600, timeout=1, 
         portpaths = ("/dev/serial0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), 
@@ -173,7 +173,7 @@ class Fedwatcher:
         if multi:
           self.main_thread = False
         line = port.readline()
-        self.now_dt = datetime.datetime.now().isoformat()
+        self.now_dt = datetime.datetime.now()
         if lockInd is not None:
            self.port_locks[lockInd] = False
         line = str(line)[2:-5]
@@ -242,6 +242,10 @@ class Fedwatcher:
                 # it might be that the folder doesn't exist yet because no data has been saved
                 if os.path.exists(self.today_dir):
                     csv_files = [file for file in os.listdir(self.today_dir) if file.endswith('.csv')]
+                    today = datetime.date.today()
+                    timestr = f"{today.month:02d}" + f"{today.day:02d}" + str(today.year%100)
+                    # only report about files that contain today's string
+                    csv_files = [file for file in csv_files if timestr in file]
                     #print(csv_files)
                     for fn in csv_files:
                         #print(f"summary for {fn}")
@@ -251,7 +255,7 @@ class Fedwatcher:
                         else:
                             print(summary)
                 else:
-                    summary = f"No events saved before {self.now_dt.isoformat()}"
+                    summary = f"No events saved before {self.format_human_time(self.now_dt)}"
                     if self.tg_enabled:
                         self.send_tg_message(message=summary)
                     else:
@@ -489,7 +493,7 @@ class Fedwatcher:
             self.bot_token = config.get("telegram", "bot_token")
             self.chat_id = config.get("telegram", "chat_id")
             #print(f"Will use bot {self.bot_token} to message {self.chat_id}")
-            self.send_tg_message(message = f"FEDWatcher Started {datetime.datetime.now().isoformat()}")
+            self.send_tg_message(message = f"FEDWatcher Started {self.format_human_time(datetime.datetime.now())}")
             self.send_tg_message(message = f"Notification frequency set to {self.notif_interval} hours")
             return
 
@@ -503,6 +507,9 @@ class Fedwatcher:
     ###
     #   Summary Functions
     ###
+    def format_human_time(self, dt):
+        return dt.replace(microsecond=0).isoformat(" ")
+    
     def event_summary(self, filename):
         ## want to return message in format "FED{Device #} delivered {num_rows} pellets since {Time}"
         # INPUTS: data, last time interval
@@ -511,6 +518,7 @@ class Fedwatcher:
         # iterate through dataframe
         path = os.path.join(self.today_dir, filename)
         df = pd.read_csv(path)
+        battery = self.get_battery(df)
         # make the column datetime
         df["Pi_Time"] = pd.to_datetime(df["Pi_Time"])
         device_number = filename.split("_")[0]
@@ -521,9 +529,13 @@ class Fedwatcher:
         # filter through events using PiTime
         filtered_df = df.loc[(df['Pi_Time'] > self.last_notif) & (df['Pi_Time'] < self.now_dt) & (df['Event']=="Pellet")]
         # pellets = number of rows in df after filtering
-        num_pellets = len(filtered_df.index) # will this work with empty df?
-        return f"{device_number} session {session_number} delivered {num_pellets} pelets since {self.last_notif.isoformat()}"
-
+        num_pellets = len(filtered_df.index)
+        human_time = self.format_human_time(self.last_notif)
+        message = f"{device_number}\nsession: {session_number}\nPellets: {num_pellets} since {human_time}\nLast Battery read: {battery}V"
+        return message
+    
+    def get_battery(self, df):
+        return df.iloc[[-1]]['Battery_Voltage'].item()
 
     ###
     #   Mail Function
