@@ -357,7 +357,8 @@ class App():
 			# 	print("Erasing email information")
 			# 	self.fw.delete_email()
 			# this first stops fedwatcher, fedwatcher will handle data saving
-			self.fw.stop()
+			if self.fw.running:
+				self.stop_experiment()
 			time.sleep(0.5)
 			self.fw.exit_gracefully()
 			self.window.destroy()
