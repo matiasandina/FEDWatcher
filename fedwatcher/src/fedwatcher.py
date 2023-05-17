@@ -58,7 +58,7 @@ class Fedwatcher:
     # Notification variables
     last_notif = None
     # TODO: give user control using GUI.py
-    notif_interval = 0.01 # in hours
+    notif_interval = 6 # in hours
 
     def __init__(self, baud=57600, timeout=1, 
         portpaths = ("/dev/serial0", "/dev/ttyAMA1", "/dev/ttyAMA2", "/dev/ttyAMA3", "/dev/ttyAMA4"), 
