@@ -23,7 +23,7 @@ void setup() {
   // Turn to true if you are using FEDWatcher
   fed3.setSerial(true);
   // set a 15 min timeout 
-  fed3.Timeout(15 * 60);
+  //fed3.Timeout(15 * 60);
 }
 
 void loop() {
