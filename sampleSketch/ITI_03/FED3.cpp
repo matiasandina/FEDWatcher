@@ -915,7 +915,7 @@ void FED3::writeDataString(char* s, DateTime now){
     sprintf(interPelletIntervalStr, "%d", interPelletInterval);
   }
       
-  char durationStr[10];
+  char durationStr[20];
   if (Event == "Pellet"){
     strcpy(durationStr, "nan");
   }
@@ -934,21 +934,28 @@ void FED3::writeDataString(char* s, DateTime now){
   }
   VERchar[i] = '\0';
   
-  char sessionchar[sessiontype.length()];
+  char sessionchar[sessiontype.length() + 1];
   for (i = 0; i < sessiontype.length(); i++) {
     sessionchar[i] = sessiontype[i];
   }
   sessionchar[i] = '\0';
   
-  char EventChar[Event.length()];
+  char EventChar[Event.length() + 1];
   for (i = 0; i < Event.length(); i++) {
     EventChar[i] = Event[i];
   }
   EventChar[i] = '\0';
+  
 
   sprintf(s, "%02d/%02d/%04d %02d:%02d:%02d,%s,%s,%d,%.2f,%d,%d,%s,%s,%d,%d,%d,%d,%s,%s,%s\0",
     now.month(), now.day(), now.year(), now.hour(), now.minute(), now.second(), VERchar, sessionchar, FED, measuredvbat, numMotorTurns+1, FR, EventChar, activePokeStr,
     LeftCount, RightCount, PelletCount, BlockPelletCount, retIntervalStr, interPelletIntervalStr, durationStr);
+  
+  //char trialstring[100];  // Adjust the size according to your needs
+  //sprintf(trialstring, "%s,", sessionchar);
+  //Serial.println(trialstring);
+  Serial.print("This will be sent: ");
+  Serial.println(s);
 }
 
 //Write to SD card
