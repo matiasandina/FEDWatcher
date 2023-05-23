@@ -965,7 +965,7 @@ void FED3::logdata() {
   //////////////////////////////////////////////////////
   DateTime now = rtc.now();
   if (serialOn) {
-    const uint8_t ssize = 100;
+    const uint8_t ssize = 150;
     char s[ssize];
     writeDataString(s, now);
     serial.begin(serialSpeed);
@@ -1662,7 +1662,9 @@ void FED3::setSerial(bool b) {
 }
 
 void FED3::sendJamAlert(){
-  char s[10];
+  char s[50];
+  // TODO: Do we also want to include jamAlertInterval to advise the user how long until next event? 
+  // TODO: Do we want to alert the user that the jam was resolved?
   sprintf(s, "%d,jam\0", FED);
   serial.begin(serialSpeed);
   serial.println(s);
