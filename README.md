@@ -44,7 +44,7 @@ Next, you must enable the four hardware UARTs within the Raspberry Pi. Navigate 
 sudo nano /boot/config.txt
 ``` 
 
-At the end of the file, add on the following statements
+At the end of the file, add on the following statements:
 
 ```
 force_eeprom_read=0
@@ -54,8 +54,11 @@ dtoverlay=uart3
 dtoverlay=uart4
 dtoverlay=uart5
 ```
+> The first two lines disable the GPIO 0 and 1 functionality to be used for uart2. 
 
-> The first two lines disable the GPIO 0 and 1 functionality to be used for uart2. If you would like to use a hat or a POE fan with the Pi at the same time, remove the first three lines.
+This should work when connecting FEDs directly using jumper wires or when using the HAT we designed (see further below).
+
+> You can always remove/comment the first 3 lines above if you need to use a POE fan with the Pi at the same time, but it might create some unexpected erros. Please only do this if you are experienced with this type of config. 
 
 Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
@@ -77,6 +80,22 @@ To launch the GUI.
 cd FEDWatcher/
 source fedwatcher/bin/activate
 python3 fedwatcher/GUI.py
+```
+
+### Desktop entry
+
+You can create a `FEDWatcher.desktop` file in the `Desktop` folder (e.g,. `nano /home/pi/Desktop/FEDWatcher.desktop`). The `Exec` will vary depending on how you installed FEDWatcher. Below, we reproduce an example compatible with the manual way and no virtual environment. 
+
+```
+[Desktop Entry]
+Type=Application
+Comment=FEDWatcher
+Name=FEDWatchar
+Exec=python3 /home/pi/FEDWatcher/fedwatcher/GUI.py
+Icon=/home/pi/FEDWatcher/fedwatcher/img/64.png
+Terminal=true
+Categories=Utility
+StartupNotify=true
 ```
 
 ---
