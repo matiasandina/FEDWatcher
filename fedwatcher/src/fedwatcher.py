@@ -14,6 +14,7 @@ from smtplib import SMTPServerDisconnected, SMTPAuthenticationError
 import tkinter as tk
 import tkinter.filedialog
 import requests
+import warnings
 
 class Fedwatcher:
     # bitrate of serial from fed to pi
@@ -410,19 +411,29 @@ class Fedwatcher:
     ##
 
     def _save_to_csv(self, df_data):
+        if not isinstance(df_data[0]['Device_Number'], int):
+            warnings.warn("The 'Device_Number' value is not an integer. Possible Data Corruption! Attempting to convert to int.")
+            try:
+                device_number = int(float(df_data[0]['Device_Number']))
+            except ValueError:
+                raise ValueError("Unable to convert 'Device_Number' to an integer.")
+            warnings.warn("Successfully converted 'Device_Number' to int.")
+        else:
+            device_number = df_data[0]['Device_Number']
+
         df = self._new_df(df_data)
         today = datetime.date.today()
-        timestr = f"{today.month:02d}" + f"{today.day:02d}" + str(today.year%100)
-        #filename = f"FED{df_data[0]["Device_Number"]:03d}_" +  timestr + f"_{self.session_num:02d}.csv"
-        filename = f"FED{int(df_data[0]['Device_Number']):03d}_{timestr}_{self.session_num:02d}.csv"
+        timestr = f"{today.month:02d}" + f"{today.day:02d}" + str(today.year % 100)
+
+        filename = f"FED{device_number:03d}_{timestr}_{self.session_num:02d}.csv"
 
         self.today_dir = os.path.join(self.exp_dir, str(today.year), f"{today.month:02d}")
         if not os.path.exists(self.today_dir):
             os.makedirs(self.today_dir)
-        path =  os.path.join(self.today_dir, filename)
+        path = os.path.join(self.today_dir, filename)
         if not os.path.isfile(path):
             df.to_csv(path_or_buf=path, mode='a', index=False)
-        else:   
+        else:
             df.to_csv(path_or_buf=path, mode='a', index=False, header=False)
 
     def _new_df(self, df_data=None):
