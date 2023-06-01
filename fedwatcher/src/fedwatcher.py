@@ -161,7 +161,21 @@ class Fedwatcher:
         if self.tg_enabled:
             self.send_tg_message(message = f"jam detected on fed {fedNumber}")
             
-
+    def sendErrorAlert(self, fedNumber, error_msg):
+        """
+        Sends an error alert to notify about an error.
+        """
+        print(f"Error: {error_msg}")
+        if self.email_enabled:
+            try:
+                subject = f"FEDWatcher error alert for FED{fedNumber}"
+                body = error_msg
+                self.send_email(subject, body)
+                print("Email sent")
+            except Exception as e:
+                print(f"Error occurred in sending email: {e}")
+        if self.tg_enabled:
+            self.send_tg_message(message=f"Error on FED{fedNumber}: {error_msg}")
 
     def readPort(self, port, f=None, multi=False, verbose=False, lockInd=None):
         """
@@ -416,7 +430,9 @@ class Fedwatcher:
             try:
                 device_number = int(float(df_data[0]['Device_Number']))
             except ValueError:
-                raise ValueError("Unable to convert 'Device_Number' to an integer.")
+                error_msg = "Unable to convert 'Device_Number' to an integer."
+                self.sendErrorAlert(df_data[0]['Device_Number'], error_msg)
+                raise ValueError(error_msg)
             warnings.warn("Successfully converted 'Device_Number' to int.")
         else:
             device_number = df_data[0]['Device_Number']
