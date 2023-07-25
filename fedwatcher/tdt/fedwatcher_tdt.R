@@ -26,7 +26,7 @@ fedwatcher_tdt <- function(event_onset, trial_start=NULL){
   # hclust works well, kmeans is unstable
   # cutree(hclust(dist(event_onset)),k = event_number)
   
-  event_df <- aggregate(fed3_event_onset, 
+  event_df <- aggregate(event_onset, 
                         by = list(event = cluster_values), 
                         FUN = min)
   event_df <- dplyr::rename(event_df, seconds = x)
