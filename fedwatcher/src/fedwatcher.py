@@ -16,6 +16,13 @@ import tkinter.filedialog
 import requests
 import warnings
 
+# add simple formatting for the warnings
+# this avoids the actual code being printed twice
+def simple_format(message, category, filename, lineno, line=None):
+    return f"{filename}:{lineno}: {category.__name__}: {message}\n"
+
+warnings.formatwarning = simple_format
+
 class Fedwatcher:
     # bitrate of serial from fed to pi
     ### do not set above 57600, will lose data ###
