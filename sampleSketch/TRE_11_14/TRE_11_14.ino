@@ -38,7 +38,7 @@ void loop() {
   if (fed3.currentHour >= fed3.timedStart && fed3.currentHour < fed3.timedEnd) {
       fed3.Feed();
     }
-  }
+  
 
   fed3.run();
 }
