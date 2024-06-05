@@ -125,7 +125,7 @@ class Fedwatcher:
                     print(f"Connected to {portpath} using {gpio_info}")
                 else:
                     print(f"[WARNING]: Failed to connect to {portpath}")
-                    if portpath == "/dev/ttyAMA1" and "/dev/serial0" in self.port_locks:
+                    if portpath == "/dev/ttyAMA1" and "/dev/serial0" in self.ports:
                         print("[INFO]: /dev/ttyAMA1 cannot be used if using /dev/serial0")
                     #raise IOError("Serial port at % not opening" % portpath)
             except Exception as e:
