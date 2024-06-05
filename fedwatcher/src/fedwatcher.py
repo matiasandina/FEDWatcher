@@ -99,18 +99,24 @@ class Fedwatcher:
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
         for portpath in self.portpaths:
-            port = serial.Serial(
-                port = portpath,
-                baudrate = self.baud,
-                parity = serial.PARITY_NONE,
-                stopbits = serial.STOPBITS_ONE,
-                bytesize = serial.EIGHTBITS,
-                timeout = self.timeout,
-            )
-            if not port.is_open:
-                raise IOError("Serial port at % not opening" % portpath)
-            self.ports.append(port)
-            self.port_locks.append(False)
+            try:
+                port = serial.Serial(
+                    port = portpath,
+                    baudrate = self.baud,
+                    parity = serial.PARITY_NONE,
+                    stopbits = serial.STOPBITS_ONE,
+                    bytesize = serial.EIGHTBITS,
+                    timeout = self.timeout,
+                )
+                if port.is_open:
+                    self.ports.append(port)
+                    self.port_locks.append(False)
+                    print(f"Connected to {portpath}")
+                else:
+                    print(f"[WARNING]: Failed to connect to {portpath}")
+                    #raise IOError("Serial port at % not opening" % portpath)
+            except Exception as e:
+                print(f"Error opening {portpath}: {e}")
         if self.ports:
             self.ready = True
             self.ports = tuple(self.ports)
