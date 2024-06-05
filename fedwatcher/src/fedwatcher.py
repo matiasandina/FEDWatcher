@@ -89,6 +89,7 @@ class Fedwatcher:
         self.port_locks = self.manager.list()
         self.last_save = time.time()
         self.data_queue = mp.Queue()
+        self.open_portpaths = []
 
         if configpath is not None:
             self.configpath = configpath
@@ -121,11 +122,12 @@ class Fedwatcher:
                 if port.is_open:
                     gpio_info = port_to_gpio.get(portpath, "Unknown GPIO")
                     self.ports.append(port)
+                    self.open_portpaths.append(portpath)
                     self.port_locks.append(False)
                     print(f"Connected to {portpath} using {gpio_info}")
                 else:
                     print(f"[WARNING]: Failed to connect to {portpath}")
-                    if portpath == "/dev/ttyAMA1" and "/dev/serial0" in self.ports:
+                    if portpath == "/dev/ttyAMA1" and "/dev/serial0" in self.open_portpaths:
                         print("[INFO]: /dev/ttyAMA1 cannot be used if using /dev/serial0")
                     #raise IOError("Serial port at % not opening" % portpath)
             except Exception as e:
