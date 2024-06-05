@@ -66,6 +66,19 @@ Now, you will be able to clone the FEDWatcher github repository into your projec
 
 To install the software itself, you are advised to use a virtual environment. Clone the repository and then install package requirements in the virtual environment. Installation in Raspberry Pi takes a long time, use the piwheel link in `pip3 install` to make it faster. 
 
+Using conda:
+
+```
+git clone https://github.com/matiasandina/FEDWatcher.git
+cd FEDWatcher
+# tested on python 3.7.3 and 3.10
+conda create -n fw_env python==3.10 pip
+conda activate fw_env
+pip3 install -r requirements.txt --extra-index-url https://www.piwheels.org/simple
+```
+
+Using venv (please make sure you get a python version that is compatible!): 
+
 ```
 git clone https://github.com/matiasandina/FEDWatcher.git
 cd FEDWatcher
