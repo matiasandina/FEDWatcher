@@ -98,6 +98,16 @@ class Fedwatcher:
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
+        # Mapping of port paths to their corresponding GPIO pins for RX (Receive)
+        port_to_gpio = {
+            "/dev/serial0": "GPIO 14 (TX) & GPIO 15 (RX)",  # These are default UART pins, might change based on configuration
+            "/dev/ttyAMA1": "GPIO 14 (TX) & GPIO 15 (RX)",  # Check if this maps differently in your setup
+            "/dev/ttyAMA2": "GPIO 0 (TX) & GPIO 1 (RX)",
+            "/dev/ttyAMA3": "GPIO 4 (TX) & GPIO 5 (RX)",
+            "/dev/ttyAMA4": "GPIO 8 (TX) & GPIO 9 (RX)"
+        }
+        print("Trying to connect to ports. FEDWatcher only listens to RX GPIO pins!")
+        print(port_to_gpio)
         for portpath in self.portpaths:
             try:
                 port = serial.Serial(
@@ -109,11 +119,14 @@ class Fedwatcher:
                     timeout = self.timeout,
                 )
                 if port.is_open:
+                    gpio_info = port_to_gpio.get(portpath, "Unknown GPIO")
                     self.ports.append(port)
                     self.port_locks.append(False)
-                    print(f"Connected to {portpath}")
+                    print(f"Connected to {portpath} using {gpio_info}")
                 else:
                     print(f"[WARNING]: Failed to connect to {portpath}")
+                    if portpath == "/dev/ttyAMA1" and "/dev/serial0" in self.port_locks:
+                        print("[INFO]: /dev/ttyAMA1 cannot be used if using /dev/serial0")
                     #raise IOError("Serial port at % not opening" % portpath)
             except Exception as e:
                 print(f"Error opening {portpath}: {e}")
