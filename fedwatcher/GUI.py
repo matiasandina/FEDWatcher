@@ -187,8 +187,12 @@ class App():
 		self.bottom_text.pack()
 		self.bottom_wiki.pack()
 
-		# Start FEDWatcher ---
-		self.fw = Fedwatcher()
+		self.uart_port_var = tkinter.StringVar()
+		self.uart_port_var.set("UART2")  # default value
+		self.checkbox_bg = "#424547"  # Dark grey background
+		self.checkbox_fg = "#E1ECF2"  # Light grey foreground
+		self.checkbox_select_color = "#333333"  # Darker grey for selected checkbox
+		self.setup_uart_checkboxes()
 
 
 	def get_mac(self):
@@ -248,9 +252,66 @@ class App():
 			print("No previous configuration found. Create a new project")
 			self.create_new_project()
 
+	def setup_uart_checkboxes(self):
+		self.uart_frame = tkinter.Frame(self.menu_left, bg=self.bg_color, highlightthickness=1, highlightbackground=self.fg_color)
+		self.uart_frame.pack(fill="both", expand=True)
+
+		# Convert all packing to grid within the frame.
+		title_label = tkinter.Label(self.uart_frame, text="Select UART Ports:", fg=self.fg_color, bg=self.bg_color)
+		title_label.grid(row=0, column=0, sticky='w')  # Start grid at row 0
+
+		# Dictionary of UART ports and their descriptions
+		# Extra spaces look messed up, but it actually aligns on tkinter grid !
+		self.uart_ports = {
+			"/dev/serial0": "UART0 -- GPIO 14 (TX) & 15 (RX)",
+			"/dev/ttyAMA1": "UART1 -- GPIO 14 (TX) & 15 (RX)",
+			"/dev/ttyAMA2": "UART2 -- GPIO   0 (TX) &   1 (RX)",
+			"/dev/ttyAMA3": "UART3 -- GPIO   4 (TX) &   5 (RX)",
+			"/dev/ttyAMA4": "UART4 -- GPIO   8 (TX) &   9 (RX)"
+		}
+		self.uart_port_vars = {}
+		row_count = 1  # Start row_count at 1 to accommodate title
+
+		# Checkbox for selecting all ports
+		self.all_ports_var = tkinter.BooleanVar()
+		all_ports_cb = tkinter.Checkbutton(self.uart_frame, text="All", variable=self.all_ports_var, command=self.select_all_ports,
+											fg=self.fg_color, bg=self.bg_color, selectcolor=self.checkbox_select_color,
+											activebackground=self.bg_color, activeforeground=self.fg_color,
+											highlightthickness=0)
+		all_ports_cb.grid(row=row_count, column=0, sticky='w')
+		row_count += 1
+
+		# Checkboxes for each UART port
+		for port, description in self.uart_ports.items():
+			var = tkinter.BooleanVar()
+			# TODO:
+			# for whatever reason there's a 3 white space alignment that I cannot resolve right now
+			port_name = f"{port}   " if 'serial' in port else port
+			cb = tkinter.Checkbutton(self.uart_frame, text=f"{port_name} -- {description}", variable=var,
+										fg=self.fg_color, bg=self.bg_color, selectcolor=self.checkbox_select_color,
+										activebackground=self.bg_color, activeforeground=self.fg_color,
+										highlightthickness=0)
+			cb.grid(row=row_count, column=0, sticky='w')
+			self.uart_port_vars[port] = var
+			row_count += 1
+
+	def select_all_ports(self):
+		# If "All" is selected, update all other checkboxes to match
+		for var in self.uart_port_vars.values():
+			var.set(self.all_ports_var.get())
+
 	def start_experiment(self):
 		self.exp_stop_button.config(state="normal") 
+		# Gather the selected UART ports
+		selected_ports = [port for port, var in self.uart_port_vars.items() if var.get()]
+		if not selected_ports:
+			# If no port is selected, maybe use a default or show a warning
+			tkinter.messagebox.showinfo("Port Selection", "No UART port selected. Please select at least one.")
+			return
 		if self.all_set:
+			# Start FEDWatcher ---
+			print("FEDWatcher init...")
+			self.fw = Fedwatcher()
 			if len(self.email_entry.get()) > 0:
 				email_ok = self.fw.register_email(email=self.email_entry.get(), password=self.password_entry.get())
 				# run fedwatcher
@@ -357,10 +418,10 @@ class App():
 			# 	print("Erasing email information")
 			# 	self.fw.delete_email()
 			# this first stops fedwatcher, fedwatcher will handle data saving
-			if self.fw.running:
+			if hasattr(self, 'fw') and self.fw.running:
 				self.stop_experiment()
-			time.sleep(0.5)
-			self.fw.exit_gracefully()
+				time.sleep(0.5)
+				self.fw.exit_gracefully()
 			self.window.destroy()
 
 def create_app(root):
@@ -382,7 +443,7 @@ if __name__ == '__main__':
 	root.tk.call('wm', 'iconphoto', root._w, img)
 	#root.iconphoto(False,img)
 	# widthxheight+300+300 pxposition from the leftcorner of the monitor
-	root.geometry("800x450+300+300")
+	root.geometry("800x550+300+300")
 	# resize columns with window
 	root.columnconfigure(0, weight=1, minsize=200)
 	root.columnconfigure(1, weight=1, minsize=200)
