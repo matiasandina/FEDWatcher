@@ -10,7 +10,7 @@ This repository contains:
 * Files to print the PCB we are using as a Raspberry Pi HAT for easier interface with the Raspberry Pi 4 pinout. 
 * Python code for FEDWatcher GUI, which provides a way for the user to create projects and trigger FEDWatcher easily (see pic below).
 
-![](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/gui.png?raw=true)
+![](https://github.com/matiasandina/FEDWatcher/blob/main/docs/img/gui_v002.png?raw=true)
 
 ## Installation
 
@@ -44,21 +44,56 @@ Next, you must enable the four hardware UARTs within the Raspberry Pi. Navigate 
 sudo nano /boot/config.txt
 ``` 
 
+> [!TIP]
+> In newer versions, `config.txt` has been moved to `/boot/firmware/config.txt`. but everything else applies 
+
 At the end of the file, add on the following statements:
 
 ```
+[all]
+
+dtoverlay=w1-gpio
+enable_uart=1
 force_eeprom_read=0
 disable_poe_fan=1
 dtoverlay=uart2
 dtoverlay=uart3
-dtoverlay=uart4
 dtoverlay=uart5
+
+[spi0=on]
+# Settings when SPI0 is enabled: no uart4
+# No need to repeat uart2, uart3, uart5 if they are always loaded
+
+[spi0=off]
+# Settings when SPI0 is disabled: include uart4
+dtoverlay=uart4
 ```
-> The first two lines disable the GPIO 0 and 1 functionality to be used for uart2. 
 
-This should work when connecting FEDs directly using jumper wires or when using the HAT we designed (see further below).
+The first two lines disable the GPIO 0 and 1 functionality to be used for uart2. 
 
-> You can always remove/comment the first 3 lines above if you need to use a POE fan with the Pi at the same time, but it might create some unexpected erros. Please only do this if you are experienced with this type of config. 
+You can always remove/comment the first 3 lines above if you need to use a POE fan with the Pi at the same time, but it might create some unexpected erros. Please only do this if you are experienced with this type of config. 
+
+The general mapping to. As of now, FEDWatcher only uses RX ports, but the TX pins will be reserved too.
+Below there's mapping between `uartx` -> `GPIOx` -> `board pin #`
+
+```
+uart    GPIO                Board Pins (function)
+--------------------------------------------------
+        TXD RXD CTS RTS     
+uart0   14  15              8   10
+uart1   14  15              8   10
+uart2   0   1   2   3       27  28  (I2C)
+uart3   4   5   6   7       7   29
+uart4   8   9   10  11      24  21  (SPI0)
+uart5   12  13  14  15      32  33  (gpio-fan)
+```
+
+You can also check the (UART pinouts here)[https://pinout.xyz/pinout/uart].
+
+This configuration should work when connecting FEDs directly using jumper wires or when using the HAT we designed (see further below).
+
+> [!IMPORTANT]  
+> Selecting proper pinout is key to correct functioning of the device. In general, FEDWatcher is flexible and works well with many HATs, but knowledge of the free/used pins is paramount for correct functionality.
 
 Now, you will be able to clone the FEDWatcher github repository into your project and use the functions within it to run your own programs.
 
