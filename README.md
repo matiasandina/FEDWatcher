@@ -49,7 +49,15 @@ sudo nano /boot/config.txt
 
 At the end of the file, add on the following statements:
 
-```
+[spi0=on]
+# Settings when SPI0 is enabled: no uart4
+# No need to repeat uart2, uart3, uart5 if they are always loaded
+
+[spi0=off]
+# Settings when SPI0 is disabled: include uart4
+dtoverlay=uart4
+
+
 [all]
 
 dtoverlay=w1-gpio
@@ -60,13 +68,6 @@ dtoverlay=uart2
 dtoverlay=uart3
 dtoverlay=uart5
 
-[spi0=on]
-# Settings when SPI0 is enabled: no uart4
-# No need to repeat uart2, uart3, uart5 if they are always loaded
-
-[spi0=off]
-# Settings when SPI0 is disabled: include uart4
-dtoverlay=uart4
 ```
 
 The first two lines disable the GPIO 0 and 1 functionality to be used for uart2. 
